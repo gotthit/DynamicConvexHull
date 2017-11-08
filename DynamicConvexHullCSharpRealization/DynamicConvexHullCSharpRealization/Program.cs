@@ -10,6 +10,7 @@ namespace DynamicConvexHullCSharpRealization
     {
         static void Main(string[] args)
         {
+            
         }
     }
 }

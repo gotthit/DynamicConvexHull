@@ -6,106 +6,131 @@ using System.Threading.Tasks;
 
 namespace DynamicConvexHullCSharpRealization
 {
-    class RedBlackNode
+    class ConvexHull
     {
-        private RedBlackNode left;
-        private RedBlackNode right;
-        private RedBlackNode parent;
-
-        private bool isBlack;
-
-        private Point point;
-        private Bridge bridge;
-
-        private bool isLeaf { get { return left == null && right == null; } }
-        private bool isRoot { get { return parent == null; } }
-
-        private RedBlackNode grandparent { get { return parent?.parent; } }
-        private RedBlackNode uncle
+        private class RedBlackNode
         {
-            get
+            public RedBlackNode Left;
+            public RedBlackNode Right;
+            public RedBlackNode Parent;
+
+            public bool IsBlack;
+
+            public Point MinPoint;
+            public Point MaxPoint;
+            public Bridge Bridge;
+
+            public bool IsLeaf { get { return Left == null && Right == null; } }
+            public bool IsRoot { get { return Parent == null; } }
+
+            public RedBlackNode Grandparent { get { return Parent?.Parent; } }
+            public RedBlackNode Uncle
             {
-                if (grandparent == null)
+                get
                 {
-                    return null;
+                    if (Grandparent == null)
+                    {
+                        return null;
+                    }
+                    if (Grandparent.Left == Parent)
+                    {
+                        return Grandparent.Right;
+                    }
+                    return Grandparent.Left;
                 }
-                if (grandparent.left == parent)
+            }
+
+            public RedBlackNode(Point newPoint = null, RedBlackNode newParent = null, RedBlackNode newLeft = null, RedBlackNode newRight = null)
+            {
+                Left = newLeft;
+                Right = newRight;
+                Parent = newParent;
+
+                MinPoint = newPoint;
+                Bridge = null;
+
+                IsBlack = IsRoot;
+            }
+
+            private void rotateLeft()
+            {
+                if (Right != null)
                 {
-                    return grandparent.right;
+                    RedBlackNode rightSon = Right;
+                    rightSon.Parent = Parent;
+
+                    if (Parent != null)
+                    {
+                        if (Parent.Left == this)
+                        {
+                            Parent.Left = rightSon;
+                        }
+                        else
+                        {
+                            Parent.Right = rightSon;
+                        }
+                    }
+                    Right = rightSon.Left;
+                    if (rightSon.Left != null)
+                    {
+                        rightSon.Left.Parent = this;
+                    }
+                    rightSon.Left = this;
+                    Parent = rightSon;
                 }
-                return grandparent.left;
+            }
+
+            private void rotateRight()
+            {
+                if (Left != null)
+                {
+                    RedBlackNode leftSon = Left;
+                    leftSon.Parent = Parent;
+
+                    if (Parent != null)
+                    {
+                        if (Parent.Left == this)
+                        {
+                            Parent.Left = leftSon;
+                        }
+                        else
+                        {
+                            Parent.Right = leftSon;
+                        }
+                    }
+                    Left = leftSon.Right;
+                    if (leftSon.Right != null)
+                    {
+                        leftSon.Right.Parent = this;
+                    }
+                    leftSon.Right = this;
+                    Parent = leftSon;
+                }
             }
         }
 
-        public RedBlackNode(Point newPoint = null, Bridge newBridge = null,
-                            RedBlackNode newParent = null, RedBlackNode newLeft = null, RedBlackNode newRight = null)
+        private RedBlackNode root;
+
+        public void Insert(Point pointToInsert)
         {
-            left = newLeft;
-            right = newRight;
-            parent = newParent;
-
-            point = newPoint;
-            bridge = newBridge;
-
-            isBlack = isRoot;
-        }
-
-        private void rotateLeft()
-        {
-            if (right != null)
+            if (root == null)
             {
-                RedBlackNode rightSon = right;
-                rightSon.parent = parent;
-
-                if (parent != null)
-                {
-                    if (parent.left == this)
-                    {
-                        parent.left = rightSon;
-                    }
-                    else
-                    {
-                        parent.right = rightSon;
-                    }
-                }
-                right = rightSon.left;
-                if (rightSon.left != null)
-                {
-                    rightSon.left.parent = this;
-                }
-                rightSon.left = this;
-                parent = rightSon;
+                root = new RedBlackNode(pointToInsert);
+            }
+            else
+            {
+                insert(root, pointToInsert);
             }
         }
 
-        private void rotateRight()
+        private void insert(RedBlackNode current, Point pointToInsert)
         {
-            if (left != null)
-            {
-                RedBlackNode leftSon = left;
-                leftSon.parent = parent;
-
-                if (parent != null)
-                {
-                    if (parent.left == this)
-                    {
-                        parent.left = leftSon;
-                    }
-                    else
-                    {
-                        parent.right = leftSon;
-                    }
-                }
-                left = leftSon.right;
-                if (leftSon.right != null)
-                {
-                    leftSon.right.parent = this;
-                }
-                leftSon.right = this;
-                parent = leftSon;
-            }
+            
         }
 
-        public void
+        private void repair(RedBlackNode current)
+        {
+
+        }
     }
 }
