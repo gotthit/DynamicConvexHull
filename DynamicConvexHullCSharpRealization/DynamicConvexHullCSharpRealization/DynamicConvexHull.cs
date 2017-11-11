@@ -21,6 +21,8 @@ namespace DynamicConvexHullCSharpRealization
 
             public Treap<Point> ConvexHull;
 
+            public int leftSubHullSize;
+
             public bool IsLeaf { get { return Left == null && Right == null; } }
             public bool IsRoot { get { return Parent == null; } }
 
@@ -53,6 +55,7 @@ namespace DynamicConvexHullCSharpRealization
                 IsBlack = IsRoot;
 
                 ConvexHull = null;
+                leftSubHullSize = 0;
             }
 
             public RedBlackNode(Point newPoint, RedBlackNode newParent = null) : this(newPoint, null, null, newParent)
@@ -62,6 +65,7 @@ namespace DynamicConvexHullCSharpRealization
 
             public RedBlackNode(RedBlackNode newLeft, RedBlackNode newRight, RedBlackNode newParent = null) : this(null, newLeft, newRight, newParent)
             {
+                leftSubHullSize = Treap<Point>.GetSize(newLeft?.ConvexHull);
                 ConvexHull = Treap<Point>.Merge(newLeft?.ConvexHull, newRight?.ConvexHull);
             }
 
@@ -122,23 +126,27 @@ namespace DynamicConvexHullCSharpRealization
             }
         }
 
-        private RedBlackNode root;
+        private RedBlackNode leftHullRoot;
+        private RedBlackNode rightHullRoot;
 
         public void Insert(Point pointToInsert)
         {
-            if (root == null)
+            if (leftHullRoot == null)
             {
-                root = new RedBlackNode(pointToInsert);
+                leftHullRoot = new RedBlackNode(pointToInsert);
             }
             else
             {
-                insert(root, pointToInsert);
+                insert(leftHullRoot, pointToInsert);
             }
         }
 
         private void insert(RedBlackNode current, Point pointToInsert)
         {
-            
+            if (current.IsLeaf)
+            {
+                
+            }
         }
 
         private void repair(RedBlackNode current)
