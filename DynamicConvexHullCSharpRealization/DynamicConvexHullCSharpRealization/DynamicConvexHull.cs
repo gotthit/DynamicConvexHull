@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DynamicConvexHullCSharpRealization
 {
-    class ConvexHull
+    class DynamicConvexHull
     {
         private class RedBlackNode
         {
@@ -16,9 +16,10 @@ namespace DynamicConvexHullCSharpRealization
 
             public bool IsBlack;
 
-            public Point MinPoint;
             public Point MaxPoint;
             public Bridge Bridge;
+
+            public Treap<Point> ConvexHull;
 
             public bool IsLeaf { get { return Left == null && Right == null; } }
             public bool IsRoot { get { return Parent == null; } }
@@ -40,16 +41,28 @@ namespace DynamicConvexHullCSharpRealization
                 }
             }
 
-            public RedBlackNode(Point newPoint = null, RedBlackNode newParent = null, RedBlackNode newLeft = null, RedBlackNode newRight = null)
+            private RedBlackNode(Point newPoint = null, RedBlackNode newLeft = null, RedBlackNode newRight = null, RedBlackNode newParent = null)
             {
                 Left = newLeft;
                 Right = newRight;
                 Parent = newParent;
 
-                MinPoint = newPoint;
+                MaxPoint = newPoint;
                 Bridge = null;
 
                 IsBlack = IsRoot;
+
+                ConvexHull = null;
+            }
+
+            public RedBlackNode(Point newPoint, RedBlackNode newParent = null) : this(newPoint, null, null, newParent)
+            {
+                ConvexHull = new Treap<Point>(newPoint);
+            }
+
+            public RedBlackNode(RedBlackNode newLeft, RedBlackNode newRight, RedBlackNode newParent = null) : this(null, newLeft, newRight, newParent)
+            {
+                ConvexHull = Treap<Point>.Merge(newLeft?.ConvexHull, newRight?.ConvexHull);
             }
 
             private void rotateLeft()
