@@ -12,16 +12,16 @@ namespace DynamicConvexHullCSharpRealization
 
         public int size { get; private set; }
 
-        public Treap<T> left { get; private set; }
-        public Treap<T> right { get; private set; }
+        public Treap<T> Left { get; private set; }
+        public Treap<T> Right { get; private set; }
 
         public T Key { get; private set; }
 
         public Treap(T newKey, Treap<T> newLeft = null, Treap<T> newRight = null)
         {
             Key = newKey;
-            left = newLeft;
-            right = newRight;
+            Left = newLeft;
+            Right = newRight;
             size = 1;
         }
 
@@ -32,7 +32,7 @@ namespace DynamicConvexHullCSharpRealization
 
         private void update()
         {
-            size = GetSize(left) + GetSize(right) + 1;
+            size = GetSize(Left) + GetSize(Right) + 1;
         }
 
         public static void Split(Treap<T> current, T divider, out Treap<T> leftHalf, out Treap<T> rightHalf)
@@ -44,15 +44,15 @@ namespace DynamicConvexHullCSharpRealization
             }
             if (divider.CompareTo(current.Key) > 0)
             {
-                Split(current.right, divider, out leftHalf, out rightHalf);
-                current.right = rightHalf;
+                Split(current.Right, divider, out leftHalf, out rightHalf);
+                current.Right = rightHalf;
                 current.update();
                 rightHalf = current;
             }
             else
             {
-                Split(current.left, divider, out leftHalf, out rightHalf);
-                current.left = leftHalf;
+                Split(current.Left, divider, out leftHalf, out rightHalf);
+                current.Left = leftHalf;
                 current.update();
                 leftHalf = current;
             }
@@ -65,17 +65,17 @@ namespace DynamicConvexHullCSharpRealization
                 leftHalf = null;
                 rightHalf = null;
             }
-            if (GetSize(current.left) >= toCut)
+            if (GetSize(current.Left) >= toCut)
             {
-                SplitBySize(current.right, toCut, out leftHalf, out rightHalf);
-                current.right = rightHalf;
+                SplitBySize(current.Right, toCut, out leftHalf, out rightHalf);
+                current.Right = rightHalf;
                 current.update();
                 rightHalf = current;
             }
             else
             {
-                SplitBySize(current.left, toCut - GetSize(current.left) - 1, out leftHalf, out rightHalf);
-                current.left = leftHalf;
+                SplitBySize(current.Left, toCut - GetSize(current.Left) - 1, out leftHalf, out rightHalf);
+                current.Left = leftHalf;
                 current.update();
                 leftHalf = current;
             }
@@ -93,13 +93,13 @@ namespace DynamicConvexHullCSharpRealization
             }
             if (randomGenerator.Next(0, leftTreap.size + rightTreap.size) < leftTreap.size)
             {
-                leftTreap.right = Merge(leftTreap.right, rightTreap);
+                leftTreap.Right = Merge(leftTreap.Right, rightTreap);
                 leftTreap.update();
                 return leftTreap;
             }
             else
             {
-                rightTreap.left = Merge(leftTreap, rightTreap.left);
+                rightTreap.Left = Merge(leftTreap, rightTreap.Left);
                 rightTreap.update();
                 return rightTreap;
             }

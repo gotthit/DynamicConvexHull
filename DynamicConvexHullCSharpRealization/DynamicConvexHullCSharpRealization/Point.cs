@@ -8,6 +8,9 @@ namespace DynamicConvexHullCSharpRealization
 {
     class Point : IComparable<Point>
     {
+        public static readonly Point MaxPoint = new Point(int.MaxValue, int.MaxValue);
+        public static readonly Point MinPoint = new Point(int.MinValue, int.MinValue);
+
         public readonly int X;
         public readonly int Y;
 

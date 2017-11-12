@@ -193,7 +193,6 @@ namespace DynamicConvexHullCSharpRealization
                 else
                 {
                     RedBlackNode newRoot = delete(rightHullRoot, pointToDelete);
-                    // null means we deleted nothing
                     if (newRoot != null)
                     {
                         rightHullRoot = newRoot;
@@ -206,8 +205,33 @@ namespace DynamicConvexHullCSharpRealization
         {
             current.MaxPoint = Utils.Max(current.Left.MaxPoint, current.Right.MaxPoint);
 
+            if (current.Left != null && current.Right != null)
+            {
+                Treap<Point> leftTop = current.Left.ConvexHull;
+                Treap<Point> rightTop = current.Right.ConvexHull;
+
+                Point leftPrevPoint = leftTop.Left.Key;
+                Point leftNextPoint = leftTop.Right.Key;
+
+                Point rightPrevPoint = rightTop.Left.Key;
+                Point rightNextPoint = rightTop.Right.Key;
+
+
+            }
 
             throw new NotImplementedException();
+        }
+
+        private static void pushSubHullDown(RedBlackNode current)
+        {
+            if (!current.IsLeaf)
+            {
+                Treap<Point> leftHalf;
+                Treap<Point> rightHalf;
+                Treap<Point>.SplitBySize(current.ConvexHull, current.leftSubHullSize, out leftHalf, out rightHalf);
+                current.Left.ConvexHull = Treap<Point>.Merge(leftHalf, current.Left.ConvexHull);
+                current.Right.ConvexHull = Treap<Point>.Merge(current.Right.ConvexHull, rightHalf);
+            }
         }
 
         private static RedBlackNode recountToUp(RedBlackNode current)
@@ -240,6 +264,8 @@ namespace DynamicConvexHullCSharpRealization
             }
             else
             {
+                pushSubHullDown(current);
+
                 if (pointToInsert.CompareTo(current.Left.MaxPoint) <= 0)
                 {
                     return insert(current.Left, pointToInsert);
@@ -360,6 +386,8 @@ namespace DynamicConvexHullCSharpRealization
             }
             else if (!current.IsLeaf)
             {
+                pushSubHullDown(current);
+
                 if (pointToDelete.CompareTo(current.Left.MaxPoint) <= 0)
                 {
                     return delete(current.Left, pointToDelete);
