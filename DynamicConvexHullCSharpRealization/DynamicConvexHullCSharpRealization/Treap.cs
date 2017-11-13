@@ -43,6 +43,9 @@ namespace DynamicConvexHullCSharpRealization
         {
             Size = GetSize(Left) + GetSize(Right) + 1;
 
+            MaxElement = Key;
+            MinElement = Key;
+
             if (Left != null)
             {
                 MaxElement = Utils.Max(MaxElement, Left.MaxElement);
@@ -65,14 +68,14 @@ namespace DynamicConvexHullCSharpRealization
             if (divider.CompareTo(current.Key) > 0)
             {
                 Split(current.Right, divider, out leftHalf, out rightHalf);
-                current.Right = rightHalf;
+                current.Left = rightHalf;
                 current.update();
                 rightHalf = current;
             }
             else
             {
                 Split(current.Left, divider, out leftHalf, out rightHalf);
-                current.Left = leftHalf;
+                current.Right = leftHalf;
                 current.update();
                 leftHalf = current;
             }
@@ -85,17 +88,17 @@ namespace DynamicConvexHullCSharpRealization
                 leftHalf = null;
                 rightHalf = null;
             }
-            if (GetSize(current.Left) >= toCut)
+            else if (GetSize(current.Left) >= toCut)
             {
-                SplitBySize(current.Right, toCut, out leftHalf, out rightHalf);
-                current.Right = rightHalf;
+                SplitBySize(current.Left, toCut, out leftHalf, out rightHalf);
+                current.Left = rightHalf;
                 current.update();
                 rightHalf = current;
             }
             else
             {
-                SplitBySize(current.Left, toCut - GetSize(current.Left) - 1, out leftHalf, out rightHalf);
-                current.Left = leftHalf;
+                SplitBySize(current.Right, toCut - GetSize(current.Left) - 1, out leftHalf, out rightHalf);
+                current.Right = leftHalf;
                 current.update();
                 leftHalf = current;
             }

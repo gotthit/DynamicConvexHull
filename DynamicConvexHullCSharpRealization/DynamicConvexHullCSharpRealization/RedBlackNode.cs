@@ -25,7 +25,6 @@ namespace DynamicConvexHullCSharpRealization
                 public Color IsBlack;
 
                 public Point MaxPoint;
-                public Bridge Bridge;
 
                 public Treap<Point> ConvexHull;
 
@@ -73,7 +72,6 @@ namespace DynamicConvexHullCSharpRealization
                     Parent = newParent;
 
                     MaxPoint = newPoint;
-                    Bridge = null;
 
                     IsBlack = IsRoot ? Color.Black : Color.Red;
 
@@ -96,6 +94,8 @@ namespace DynamicConvexHullCSharpRealization
                 {
                     if (Right != null)
                     {
+                        pushSubHullDown(Right);
+
                         RedBlackNode rightSon = Right;
                         rightSon.Parent = Parent;
 
@@ -124,6 +124,8 @@ namespace DynamicConvexHullCSharpRealization
                 {
                     if (Left != null)
                     {
+                        pushSubHullDown(Left);
+
                         RedBlackNode leftSon = Left;
                         leftSon.Parent = Parent;
 

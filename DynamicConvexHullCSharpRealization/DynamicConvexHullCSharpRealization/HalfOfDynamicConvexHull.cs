@@ -169,11 +169,11 @@ namespace DynamicConvexHullCSharpRealization
 
             private void recount(RedBlackNode current)
             {
-                current.MaxPoint = Utils.Max(current.Left.MaxPoint, current.Right.MaxPoint);
-
-                if (current.Left != null && current.Right != null)
+                if (current != null && current.Left != null && current.Right != null && current.ConvexHull == null)
                 {
                     // left is lover hull and right is upper hull
+
+                    current.MaxPoint = Utils.Max(current.Left.MaxPoint, current.Right.MaxPoint);
 
                     Treap<Point> leftTop = current.Left.ConvexHull;
                     Treap<Point> rightTop = current.Right.ConvexHull;
@@ -328,21 +328,23 @@ namespace DynamicConvexHullCSharpRealization
                 }
             }
 
-            private void pushSubHullDown(RedBlackNode current)
+            private static void pushSubHullDown(RedBlackNode current)
             {
-                if (!current.IsLeaf)
+                if (current != null && !current.IsLeaf && current.ConvexHull != null)
                 {
                     Treap<Point> leftHalf;
                     Treap<Point> rightHalf;
                     Treap<Point>.SplitBySize(current.ConvexHull, current.leftSubHullSize, out leftHalf, out rightHalf);
                     current.Left.ConvexHull = Treap<Point>.Merge(leftHalf, current.Left.ConvexHull);
                     current.Right.ConvexHull = Treap<Point>.Merge(current.Right.ConvexHull, rightHalf);
+
+                    current.ConvexHull = null;
                 }
             }
 
             private RedBlackNode recountToUp(RedBlackNode current)
             {
-                while (!current.IsRoot)
+                while (current != null && !current.IsRoot)
                 {
                     recount(current);
                     current = current.Parent;
@@ -369,6 +371,8 @@ namespace DynamicConvexHullCSharpRealization
                         current.Left = new RedBlackNode(current.MaxPoint, current);
                         current.Right = new RedBlackNode(pointToInsert, current);
                     }
+                    current.ConvexHull = null;
+
                     recount(current);
                     return initialInsertRepair(current);
                 }
