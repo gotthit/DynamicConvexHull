@@ -15,8 +15,8 @@ namespace DynamicConvexHullCSharpRealization
             hull.Insert(new Point(1, 1));
             hull.Insert(new Point(0, 2));
             hull.Insert(new Point(2, 3));
-            hull.Delete(new Point(2, 3));
-            hull.Insert(new Point(2, 3));
+            // hull.Insert(new Point(2, 0));
+            hull.Insert(new Point(3, 1));
             hull.GetHull();
 
             Console.WriteLine();

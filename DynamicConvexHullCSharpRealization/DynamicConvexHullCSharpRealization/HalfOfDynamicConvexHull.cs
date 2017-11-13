@@ -125,19 +125,19 @@ namespace DynamicConvexHullCSharpRealization
                     current = current.Left;
                     currentPoint = current.Key;
                 }
-                //else
-                //{
-                //    maxPoint = current.Key;
-                //    maxToCut = toCut;
+                else if (minPoint != null)
+                {
+                    maxPoint = currentPoint;
+                    maxToCut = toCut;
 
-                //    currentPoint = minPoint;
-                //    toCut = minToCut;
+                    currentPoint = minPoint;
+                    toCut = minToCut;
 
-                //    minPoint = null;
-                //    minToCut = 0;
+                    minPoint = null;
+                    minToCut = 0;
 
-                //    current = null;
-                //}
+                    current = null;
+                }
             }
 
             private void goRight(ref Treap<Point> current, ref Point currentPoint, ref Point minPoint, ref Point maxPoint,
@@ -152,19 +152,19 @@ namespace DynamicConvexHullCSharpRealization
                     currentPoint = current.Key;
                     toCut = toCut + Treap<Point>.GetSize(current.Left) + 1;
                 }
-                //else
-                //{
-                //    minPoint = current.Key;
-                //    minToCut = toCut;
+                else if (maxPoint != null)
+                {
+                    minPoint = currentPoint;
+                    minToCut = toCut;
 
-                //    currentPoint = maxPoint;
-                //    toCut = maxToCut;
+                    currentPoint = maxPoint;
+                    toCut = maxToCut;
 
-                //    maxPoint = null;
-                //    maxToCut = int.MaxValue - 100;
+                    maxPoint = null;
+                    maxToCut = int.MaxValue - 100;
 
-                //    current = null;
-                //}
+                    current = null;
+                }
             }
 
             private void recount(RedBlackNode current)
