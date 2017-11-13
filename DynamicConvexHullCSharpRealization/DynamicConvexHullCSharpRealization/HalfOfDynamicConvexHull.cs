@@ -50,6 +50,11 @@ namespace DynamicConvexHullCSharpRealization
                 }
             }
 
+            public void GetHalfHull()
+            {
+                hullRoot.ConvexHull.GetArray();
+            }
+
             #region hull_recount_operations
 
             private PointPosition determinePosition(Point beginVector, Point endVector, Point toDetermine)
@@ -86,6 +91,25 @@ namespace DynamicConvexHullCSharpRealization
                     {
                         return PointPosition.Right;
                     }
+                }
+            }
+
+            private double getXbyY(Point first, Point second, double yCoord)
+            {
+                return (yCoord - first.Y) * (second.X - first.X) / (second.Y - first.Y) + first.X;
+            }
+
+            private bool isIntersectLoverY(Point firstLeft, Point secondLeft, Point firstRight, Point secondRight, double yCoord)
+            {
+                double leftXbyY = getXbyY(firstLeft, secondLeft, yCoord);
+                double rightXbyY = getXbyY(firstRight, secondRight, yCoord);
+                if (IsLeftHalf)
+                {
+                    return leftXbyY < rightXbyY;
+                }
+                else
+                {
+                    return rightXbyY < leftXbyY;
                 }
             }
 
@@ -137,7 +161,7 @@ namespace DynamicConvexHullCSharpRealization
                     toCut = maxToCut;
 
                     maxPoint = null;
-                    maxToCut = int.MaxValue;
+                    maxToCut = int.MaxValue - 100;
 
                     current = null;
                 }
@@ -252,7 +276,7 @@ namespace DynamicConvexHullCSharpRealization
                                  rightPrevPos == PointPosition.Left && rightNextPos == PointPosition.Right) // I - the hardest
                         {
 
-                            if ()
+                            if (isIntersectLoverY(leftTopPoint, leftNextPoint, rightTopPoint, rightNextPoint, mediumY))
                             {
                                 goRight(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
                                    ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
@@ -268,9 +292,40 @@ namespace DynamicConvexHullCSharpRealization
                             throw new Exception("something wrong");
                         }
                     }
-                }
+                    // we want to have top point in right treap after split
+                    --toLeaveInRightHull;
 
-                throw new NotImplementedException();
+                    Treap<Point> leftLeftHalf;
+                    Treap<Point> leftRightHalf;
+                    Treap<Point> rightLeftHalf;
+                    Treap<Point> rightRightHalf;
+
+                    if (leftTopPoint.Y == rightTopPoint.Y)
+                    {
+                        if ((leftTopPoint.X < rightTopPoint.X && IsLeftHalf) ||
+                            (leftTopPoint.X > rightTopPoint.X && !IsLeftHalf))
+                        {
+                            ++toLeaveInRightHull;
+                        }
+                        else if ((leftTopPoint.X > rightTopPoint.X && IsLeftHalf) ||
+                                 (leftTopPoint.X < rightTopPoint.X && !IsLeftHalf))
+                        {
+                            --toCutFromLeftHull;
+                        }
+                        else
+                        {
+                            toLeaveInRightHull++;
+                        }
+                    }
+
+                    current.leftSubHullSize = toCutFromLeftHull;
+                    Treap<Point>.SplitBySize(current.Left.ConvexHull, toCutFromLeftHull, out leftLeftHalf, out leftRightHalf);
+                    Treap<Point>.SplitBySize(current.Right.ConvexHull, toLeaveInRightHull, out rightLeftHalf, out rightRightHalf);
+
+                    current.ConvexHull = Treap<Point>.Merge(leftLeftHalf, rightRightHalf);
+                    current.Left.ConvexHull = leftRightHalf;
+                    current.Right.ConvexHull = rightLeftHalf;
+                }
             }
 
             private void pushSubHullDown(RedBlackNode current)

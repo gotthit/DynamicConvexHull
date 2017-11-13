@@ -10,7 +10,13 @@ namespace DynamicConvexHullCSharpRealization
     {
         static void Main(string[] args)
         {
-            
+            DynamicConvexHull hull = new DynamicConvexHull();
+            hull.Insert(new Point(0, 0));
+            hull.GetHull();
+
+            Console.WriteLine();
+            Console.WriteLine("---------------------");
+            Console.ReadKey();
         }
     }
 }

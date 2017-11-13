@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -122,6 +123,13 @@ namespace DynamicConvexHullCSharpRealization
                 rightTreap.update();
                 return rightTreap;
             }
+        }
+
+        public void GetArray()
+        {
+            Left?.GetArray();
+            Console.Write(Key + " ");
+            Right?.GetArray();
         }
     }
 }
