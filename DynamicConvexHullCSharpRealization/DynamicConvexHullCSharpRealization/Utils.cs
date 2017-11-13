@@ -34,8 +34,10 @@ namespace DynamicConvexHullCSharpRealization
 
         public static PointPosition DeterminePosition(Point beginVector, Point endVector, Point toDetermine)
         {
-            double vectorMultiplictionResult = (endVector.X - beginVector.X) * (toDetermine.Y - beginVector.Y) - 
-                                            (endVector.Y - beginVector.Y) * (toDetermine.X - beginVector.X);
+            // (х3 - х1) * (у2 - у1) - (у3 - у1) * (х2 - х1)
+
+            double vectorMultiplictionResult = (toDetermine.X - beginVector.X) * (endVector.Y - beginVector.Y) - 
+                                            (toDetermine.Y - beginVector.Y) * (endVector.X - beginVector.X);
 
             if (vectorMultiplictionResult > 0.0000001)
             {

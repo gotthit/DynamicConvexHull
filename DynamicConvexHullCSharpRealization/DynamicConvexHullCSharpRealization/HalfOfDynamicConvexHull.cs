@@ -125,19 +125,19 @@ namespace DynamicConvexHullCSharpRealization
                     current = current.Left;
                     currentPoint = current.Key;
                 }
-                else
-                {
-                    maxPoint = current.Key;
-                    maxToCut = toCut;
+                //else
+                //{
+                //    maxPoint = current.Key;
+                //    maxToCut = toCut;
 
-                    currentPoint = minPoint;
-                    toCut = minToCut;
+                //    currentPoint = minPoint;
+                //    toCut = minToCut;
 
-                    minPoint = null;
-                    minToCut = 0;
+                //    minPoint = null;
+                //    minToCut = 0;
 
-                    current = null;
-                }
+                //    current = null;
+                //}
             }
 
             private void goRight(ref Treap<Point> current, ref Point currentPoint, ref Point minPoint, ref Point maxPoint,
@@ -152,19 +152,19 @@ namespace DynamicConvexHullCSharpRealization
                     currentPoint = current.Key;
                     toCut = toCut + Treap<Point>.GetSize(current.Left) + 1;
                 }
-                else
-                {
-                    minPoint = current.Key;
-                    minToCut = toCut;
+                //else
+                //{
+                //    minPoint = current.Key;
+                //    minToCut = toCut;
 
-                    currentPoint = maxPoint;
-                    toCut = maxToCut;
+                //    currentPoint = maxPoint;
+                //    toCut = maxToCut;
 
-                    maxPoint = null;
-                    maxToCut = int.MaxValue - 100;
+                //    maxPoint = null;
+                //    maxToCut = int.MaxValue - 100;
 
-                    current = null;
-                }
+                //    current = null;
+                //}
             }
 
             private void recount(RedBlackNode current)
@@ -188,7 +188,7 @@ namespace DynamicConvexHullCSharpRealization
                     double mediumY = (leftTop.MaxElement.Y + rightTop.MinElement.Y) / 2;
 
                     int toCutFromLeftHull = Treap<Point>.GetSize(leftTop?.Left) + 1;
-                    int toLeaveInRightHull = Treap<Point>.GetSize(leftTop?.Left) + 1;
+                    int toLeaveInRightHull = Treap<Point>.GetSize(rightTop?.Left) + 1;
 
                     int minPointCutFromLeft = 0;
                     int maxPointCutFromLeft = leftTop.Size;
@@ -211,7 +211,7 @@ namespace DynamicConvexHullCSharpRealization
                         PointPosition rightNextPos = determinePosition(leftTopPoint, rightTopPoint, rightNextPoint);
 
                         if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Right &&
-                            rightPrevPos == PointPosition.Right && rightPrevPos == PointPosition.Right) // A - found
+                            rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Right) // A - found
                         {
                             break;
                         }
