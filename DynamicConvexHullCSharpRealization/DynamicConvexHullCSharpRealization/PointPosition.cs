@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace DynamicConvexHullCSharpRealization
 {
-    partial class DynamicConvexHull
+    enum PointPosition
     {
-        private HalfOfDynamicConvexHull leftHull;
-        private HalfOfDynamicConvexHull rightHull;
-
-
+        Left,
+        On,
+        Right
     }
 }

@@ -8,10 +8,10 @@ namespace DynamicConvexHullCSharpRealization
 {
     class Point : IComparable<Point>
     {
-        public readonly int X;
-        public readonly int Y;
+        public readonly double X;
+        public readonly double Y;
 
-        public Point(int x, int y)
+        public Point(double x, double y)
         {
             X = x;
             Y = y;

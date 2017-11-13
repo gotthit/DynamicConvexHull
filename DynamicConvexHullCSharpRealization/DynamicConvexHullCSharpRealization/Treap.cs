@@ -10,7 +10,10 @@ namespace DynamicConvexHullCSharpRealization
     {
         private static Random randomGenerator = new Random();
 
-        public int size { get; private set; }
+        public int Size { get; private set; }
+
+        public T MaxElement { get; private set; }
+        public T MinElement { get; private set; }
 
         public Treap<T> Left { get; private set; }
         public Treap<T> Right { get; private set; }
@@ -22,17 +25,33 @@ namespace DynamicConvexHullCSharpRealization
             Key = newKey;
             Left = newLeft;
             Right = newRight;
-            size = 1;
+            Size = 1;
+
+            MaxElement = newKey;
+            MinElement = newKey;
+
+            update();
         }
 
         public static int GetSize(Treap<T> treap)
         {
-            return treap == null ? 0 : treap.size;
+            return treap == null ? 0 : treap.Size;
         }
 
         private void update()
         {
-            size = GetSize(Left) + GetSize(Right) + 1;
+            Size = GetSize(Left) + GetSize(Right) + 1;
+
+            if (Left != null)
+            {
+                MaxElement = Utils.Max(MaxElement, Left.MaxElement);
+                MinElement = Utils.Min(MinElement, Left.MinElement);
+            }
+            if (Right != null)
+            {
+                MaxElement = Utils.Max(MaxElement, Right.MaxElement);
+                MinElement = Utils.Min(MinElement, Right.MinElement);
+            }
         }
 
         public static void Split(Treap<T> current, T divider, out Treap<T> leftHalf, out Treap<T> rightHalf)
@@ -91,7 +110,7 @@ namespace DynamicConvexHullCSharpRealization
             {
                 return leftTreap;
             }
-            if (randomGenerator.Next(0, leftTreap.size + rightTreap.size) < leftTreap.size)
+            if (randomGenerator.Next(0, leftTreap.Size + rightTreap.Size) < leftTreap.Size)
             {
                 leftTreap.Right = Merge(leftTreap.Right, rightTreap);
                 leftTreap.update();
