@@ -43,7 +43,7 @@ namespace DynamicConvexHullCSharpRealization
             {
                 return PointPosition.Right;
             }
-            else if (vectorMultiplictionResult < 0.0000001)
+            else if (vectorMultiplictionResult < -0.0000001)
             {
                 return PointPosition.Left;
             }

@@ -167,6 +167,104 @@ namespace DynamicConvexHullCSharpRealization
                 }
             }
 
+            private bool makeDecisionAboutRotation(ref Treap<Point> leftTop, ref Point leftTopPoint, Point leftPrevPoint, Point leftNextPoint, 
+                                                   ref Point leftMinPoint, ref Point leftMaxPoint, 
+                                                   ref int toCutFromLeftHull, ref int minPointCutFromLeft, ref int maxPointCutFromLeft,
+                                                   ref Treap<Point> rightTop, ref Point rightTopPoint, Point rightPrevPoint, Point rightNextPoint,
+                                                   ref Point rightMinPoint, ref Point rightMaxPoint,
+                                                   ref int toLeaveInRightHull, ref int minPointLeaveInRight, ref int maxPointLeaveInRight,
+                                                   double mediumY)
+            {
+                PointPosition leftPrevPos = determinePosition(leftTopPoint, rightTopPoint, leftPrevPoint);
+                PointPosition leftNextPos = determinePosition(leftTopPoint, rightTopPoint, leftNextPoint);
+
+                PointPosition rightPrevPos = determinePosition(leftTopPoint, rightTopPoint, rightPrevPoint);
+                PointPosition rightNextPos = determinePosition(leftTopPoint, rightTopPoint, rightNextPoint);
+
+                if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Right &&
+                    rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Right) // A - found
+                {
+                    return true; // answer found
+                }
+                else if (leftPrevPos == PointPosition.Left && leftNextPos == PointPosition.Right &&
+                         rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Right) // B
+                {
+                    goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
+                           ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+
+                    //goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
+                    //       ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                }
+                else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Left &&
+                         rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Right) // C
+                {
+                    goRight(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
+                           ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+
+                    //goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
+                    //       ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                }
+                else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Right &&
+                         rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Left) // D
+                {
+                    //goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
+                    //       ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+
+                    goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
+                           ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                }
+                else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Right &&
+                         rightPrevPos == PointPosition.Left && rightNextPos == PointPosition.Right) // E
+                {
+                    //goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
+                    //       ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+
+                    goLeft(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
+                           ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                }
+                else if (leftPrevPos == PointPosition.Left && leftNextPos == PointPosition.Right &&
+                         rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Left) // F
+                {
+                    goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
+                           ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+
+                    goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
+                           ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                }
+                else if (leftPrevPos == PointPosition.Left && leftNextPos == PointPosition.Right &&
+                         rightPrevPos == PointPosition.Left && rightNextPos == PointPosition.Right) // G
+                {
+                    goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
+                           ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+                }
+                else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Left &&
+                         rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Left) // H
+                {
+                    goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
+                           ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                }
+                else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Left &&
+                         rightPrevPos == PointPosition.Left && rightNextPos == PointPosition.Right) // I - the hardest
+                {
+                    if (isIntersectLoverY(leftTopPoint, leftNextPoint, rightTopPoint, rightPrevPoint, mediumY))
+                    {
+                        goRight(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
+                           ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+                    }
+                    else
+                    {
+                        goLeft(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
+                           ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                    }
+                }
+                else
+                {
+                    throw new Exception("something wrong");
+                }
+
+                return false; // answer not found
+            }
+
             private void recount(RedBlackNode current)
             {
                 if (current != null && current.Left != null && current.Right != null && current.ConvexHull == null)
@@ -196,7 +294,8 @@ namespace DynamicConvexHullCSharpRealization
                     int minPointLeaveInRight = 0;
                     int maxPointLeaveInRight = rightTop.Size;
 
-                    while (true)
+                    bool bridgeFound = false;
+                    while (!bridgeFound)
                     {
                         Point leftPrevPoint = leftTop?.Left != null ? leftTop.Left.MaxElement : leftMinPoint;
                         Point leftNextPoint = leftTop?.Right != null ? leftTop.Right.MinElement : leftMaxPoint;
@@ -204,93 +303,13 @@ namespace DynamicConvexHullCSharpRealization
                         Point rightPrevPoint = rightTop?.Left != null ? rightTop.Left.MaxElement : rightMinPoint;
                         Point rightNextPoint = rightTop?.Right != null ? rightTop.Right.MinElement : rightMaxPoint;
 
-                        PointPosition leftPrevPos = determinePosition(leftTopPoint, rightTopPoint, leftPrevPoint);
-                        PointPosition leftNextPos = determinePosition(leftTopPoint, rightTopPoint, leftNextPoint);
-
-                        PointPosition rightPrevPos= determinePosition(leftTopPoint, rightTopPoint, rightPrevPoint);
-                        PointPosition rightNextPos = determinePosition(leftTopPoint, rightTopPoint, rightNextPoint);
-
-                        if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Right &&
-                            rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Right) // A - found
-                        {
-                            break;
-                        }
-                        else if (leftPrevPos == PointPosition.Left && leftNextPos == PointPosition.Right &&
-                                 rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Right) // B
-                        {
-                            goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint, 
-                                   ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
-
-                            goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                                   ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
-                        }
-                        else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Left &&
-                                 rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Right) // C
-                        {
-                            goRight(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
-                                   ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
-
-                            goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                                   ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
-                        }
-                        else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Right &&
-                                 rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Left) // D
-                        {
-                            goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
-                                   ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
-
-                            goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                                   ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
-                        }
-                        else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Right &&
-                                 rightPrevPos == PointPosition.Left && rightNextPos == PointPosition.Right) // E
-                        {
-                            goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
-                                   ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
-
-                            goLeft(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                                   ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
-                        }
-                        else if (leftPrevPos == PointPosition.Left && leftNextPos == PointPosition.Right &&
-                                 rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Left) // F
-                        {
-                            goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
-                                   ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
-
-                            goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                                   ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
-                        }
-                        else if (leftPrevPos == PointPosition.Left && leftNextPos == PointPosition.Right &&
-                                 rightPrevPos == PointPosition.Left && rightNextPos == PointPosition.Right) // G
-                        {
-                            goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
-                                   ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
-                        }
-                        else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Left &&
-                                 rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Left) // H
-                        {
-                            goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                                   ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
-                        }
-                        else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Left &&
-                                 rightPrevPos == PointPosition.Left && rightNextPos == PointPosition.Right) // I - the hardest
-                        {
-
-                            if (isIntersectLoverY(leftTopPoint, leftNextPoint, rightTopPoint, rightNextPoint, mediumY))
-                            {
-                                goRight(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
-                                   ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
-                            }
-                            else
-                            {
-                                goLeft(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                                   ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
-                            }
-                        }
-                        else
-                        {
-                            throw new Exception("something wrong");
-                        }
+                        bridgeFound = makeDecisionAboutRotation(ref leftTop, ref leftTopPoint, leftPrevPoint, leftNextPoint,
+                                                   ref leftMinPoint, ref leftMaxPoint,
+                                                   ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft,
+                                                   ref rightTop, ref rightTopPoint, rightPrevPoint, rightNextPoint,
+                                                   ref rightMinPoint, ref rightMaxPoint,
+                                                   ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight,
+                                                   mediumY);
                     }
                     // we want to have top point in right treap after split
                     --toLeaveInRightHull;
@@ -455,11 +474,13 @@ namespace DynamicConvexHullCSharpRealization
                         if (current == current.Parent.Left)
                         {
                             current.Grandparent.RotateRight();
+                            current = current.Parent;
                             recount(current.Right);
                         }
                         else
                         {
                             current.Grandparent.RotateLeft();
+                            current = current.Parent;
                             recount(current.Left);
                         }
                     }

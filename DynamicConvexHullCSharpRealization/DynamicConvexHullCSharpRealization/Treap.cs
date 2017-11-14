@@ -9,7 +9,7 @@ namespace DynamicConvexHullCSharpRealization
 {
     class Treap<T> where T : IComparable<T>
     {
-        private static Random randomGenerator = new Random();
+        private static Random randomGenerator = new Random(42 /*just to test*/ );
 
         public int Size { get; private set; }
 
