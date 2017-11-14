@@ -117,7 +117,7 @@ namespace DynamicConvexHullCSharpRealization
                     maxPoint = current.Key;
                     maxToCut = toCut;
 
-                    toCut = toCut - Treap<Point>.GetSize(current.Right) - Treap<Point>.GetSize(current.Left.Right) - 1;
+                    toCut = toCut - Treap<Point>.GetSize(current.Left.Right) - 1;
                     current = current.Left;
                     currentPoint = current.Key;
                 }
@@ -144,9 +144,9 @@ namespace DynamicConvexHullCSharpRealization
                     minPoint = current.Key;
                     minToCut = toCut;
 
+                    toCut = toCut + Treap<Point>.GetSize(current.Right.Left) + 1;
                     current = current.Right;
                     currentPoint = current.Key;
-                    toCut = toCut + Treap<Point>.GetSize(current.Left) + 1;
                 }
                 else if (maxPoint != null)
                 {
