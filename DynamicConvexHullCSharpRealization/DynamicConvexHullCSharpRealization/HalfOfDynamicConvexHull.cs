@@ -41,11 +41,7 @@ namespace DynamicConvexHullCSharpRealization
                     else
                     {
                         RedBlackNode newRoot = delete(hullRoot, pointToDelete);
-                        // null means we deleted nothing
-                        if (newRoot != null)
-                        {
-                            hullRoot = newRoot;
-                        }
+                        hullRoot = newRoot;
                     }
                 }
             }
@@ -532,8 +528,7 @@ namespace DynamicConvexHullCSharpRealization
                         return delete(current.Right, pointToDelete);
                     }
                 }
-                // it means we deleted nothing
-                return null;
+                return recountToUp(current);
             }
 
             private RedBlackNode repairAfterDelete(RedBlackNode current)
@@ -578,12 +573,15 @@ namespace DynamicConvexHullCSharpRealization
                     }
                     else // if (current.Brother.IsBlack) always true
                     {
+                        pushSubHullDown(current.Brother);
+
                         if (current.Parent.Left == current && 
                             current.Brother.Left.IsBlack == RedBlackNode.Color.Red && 
                             current.Brother.Right.IsBlack == RedBlackNode.Color.Black)
                         {
                             current.Brother.IsBlack = RedBlackNode.Color.Red;
                             current.Brother.Left.IsBlack = RedBlackNode.Color.Black;
+
                             current.Brother.RotateRight();
 
                             recount(current.Brother.Right);
@@ -595,6 +593,7 @@ namespace DynamicConvexHullCSharpRealization
                         {
                             current.Brother.IsBlack = RedBlackNode.Color.Red;
                             current.Brother.Right.IsBlack = RedBlackNode.Color.Black;
+
                             current.Brother.RotateLeft();
 
                             recount(current.Brother.Left);
@@ -607,12 +606,12 @@ namespace DynamicConvexHullCSharpRealization
                         if (current == current.Parent.Left)
                         {
                             current.Brother.Right.IsBlack = RedBlackNode.Color.Black;
-                            current.Parent.RotateRight();
+                            current.Parent.RotateLeft();
                         }
                         else
                         {
                             current.Brother.Left.IsBlack = RedBlackNode.Color.Black;
-                            current.Parent.RotateLeft();
+                            current.Parent.RotateRight();
                         }
                         return recountToUp(current.Parent);
                     }

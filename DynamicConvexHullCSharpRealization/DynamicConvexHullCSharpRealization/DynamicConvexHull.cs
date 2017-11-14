@@ -8,6 +8,8 @@ namespace DynamicConvexHullCSharpRealization
 {
     partial class DynamicConvexHull
     {
+        // TODO: we can use one red bleck tree to hold both hulls
+
         private HalfOfDynamicConvexHull leftHull;
         private HalfOfDynamicConvexHull rightHull;
 
@@ -34,6 +36,11 @@ namespace DynamicConvexHullCSharpRealization
             leftHull.GetHalfHull();
             Console.WriteLine();
             rightHull.GetHalfHull();
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
 
             return new List<Point>();
         }
