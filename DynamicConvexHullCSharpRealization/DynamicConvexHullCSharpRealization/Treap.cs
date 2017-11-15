@@ -128,11 +128,15 @@ namespace DynamicConvexHullCSharpRealization
             }
         }
 
-        public void GetArray()
+        public List<T> GetArray()
         {
-            Left?.GetArray();
-            Console.Write(Key + " ");
-            Right?.GetArray();
+            List<T> leftList = Left?.GetArray() ?? new List<T>();
+            List<T> rightList = Right?.GetArray() ?? new List<T>();
+
+            leftList.Add(Key);
+            leftList.AddRange(rightList);
+
+            return leftList;
         }
     }
 }

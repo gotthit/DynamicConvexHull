@@ -38,11 +38,36 @@ namespace DynamicConvexHullCSharpRealization
             }
         }
 
-        public void GetHull()
+        public List<Point> GetHull()
         {
-            hullRoot.GetConvexHull(true).GetArray();
-            Console.WriteLine();
-            hullRoot.GetConvexHull(false).GetArray();
+            if (hullRoot != null)
+            {
+                List<Point> leftHullList = hullRoot.GetConvexHull(true).GetArray();
+                List<Point> rightHullList = hullRoot.GetConvexHull(false).GetArray();
+                rightHullList.Reverse();
+
+                int beginRight = 0;
+                int endRight = rightHullList.Count;
+
+                while (beginRight < leftHullList.Count &&
+                       beginRight < rightHullList.Count &&
+                       leftHullList[leftHullList.Count - beginRight - 1] == rightHullList[beginRight])
+                {
+                    ++beginRight;
+                }
+                while (rightHullList.Count - endRight < leftHullList.Count &&
+                       endRight >= 0 &&
+                       leftHullList[rightHullList.Count - endRight] == rightHullList[endRight - 1])
+                {
+                    --endRight;
+                }
+                if (endRight - beginRight > 0)
+                {
+                    leftHullList.AddRange(rightHullList.GetRange(beginRight, endRight - beginRight));
+                }
+                return leftHullList;
+            }
+            return new List<Point>();
         }
 
         #region hull_recount_operations
