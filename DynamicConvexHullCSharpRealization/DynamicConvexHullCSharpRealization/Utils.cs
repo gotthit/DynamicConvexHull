@@ -39,11 +39,11 @@ namespace DynamicConvexHullCSharpRealization
             double vectorMultiplictionResult = (toDetermine.X - beginVector.X) * (endVector.Y - beginVector.Y) - 
                                             (toDetermine.Y - beginVector.Y) * (endVector.X - beginVector.X);
 
-            if (vectorMultiplictionResult > 0.0000001)
+            if (vectorMultiplictionResult > 0)
             {
                 return PointPosition.Right;
             }
-            else if (vectorMultiplictionResult < -0.0000001)
+            else if (vectorMultiplictionResult < 0)
             {
                 return PointPosition.Left;
             }
@@ -51,6 +51,21 @@ namespace DynamicConvexHullCSharpRealization
             {
                 return PointPosition.On;
             }
+        }
+
+        public static bool IsValid(Treap<Point> hull)
+        {
+            if (hull == null) return true;
+
+            var list = hull.GetArray();
+            for (int i = 0; i < list.Count - 2; ++i)
+            {
+                if (DeterminePosition(list[i], list[i + 2], list[i + 1]) == PointPosition.Right)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

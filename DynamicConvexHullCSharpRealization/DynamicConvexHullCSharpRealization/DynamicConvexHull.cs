@@ -51,17 +51,17 @@ namespace DynamicConvexHullCSharpRealization
 
                 while (beginRight < leftHullList.Count &&
                        beginRight < rightHullList.Count &&
-                       leftHullList[leftHullList.Count - beginRight - 1] == rightHullList[beginRight])
+                       leftHullList[leftHullList.Count - beginRight - 1].CompareTo(rightHullList[beginRight]) == 0)
                 {
                     ++beginRight;
                 }
                 while (rightHullList.Count - endRight < leftHullList.Count &&
                        endRight >= 0 &&
-                       leftHullList[rightHullList.Count - endRight] == rightHullList[endRight - 1])
+                       leftHullList[rightHullList.Count - endRight].CompareTo(rightHullList[endRight - 1]) == 0)
                 {
                     --endRight;
                 }
-                if (endRight - beginRight > 0)
+                if (endRight > beginRight)
                 {
                     leftHullList.AddRange(rightHullList.GetRange(beginRight, endRight - beginRight));
                 }
@@ -72,9 +72,9 @@ namespace DynamicConvexHullCSharpRealization
 
         #region hull_recount_operations
 
-        private PointPosition determinePosition(Point beginVector, Point endVector, Point toDetermine, bool isLeftHalf)
+        private static PointPosition determinePosition(Point beginVector, Point endVector, Point toDetermine, bool isLeftHalf)
         {
-            // propably we change answer for right hull to make it esier to analize in other methods
+            // we change answer for right hull to make it esier to analize in other methods
             //  PointPosition.Right -> PointPosition.Left and vise versa
 
             if (toDetermine == null)
@@ -109,12 +109,12 @@ namespace DynamicConvexHullCSharpRealization
             }
         }
 
-        private double getXbyY(Point first, Point second, double yCoord)
+        private static double getXbyY(Point first, Point second, double yCoord)
         {
             return (yCoord - first.Y) * (second.X - first.X) / (second.Y - first.Y) + first.X;
         }
 
-        private bool isIntersectLoverY(Point firstLeft, Point secondLeft, Point firstRight, Point secondRight, double yCoord, bool isLeftHalf)
+        private static bool isIntersectLoverY(Point firstLeft, Point secondLeft, Point firstRight, Point secondRight, double yCoord, bool isLeftHalf)
         {
             double leftXbyY = getXbyY(firstLeft, secondLeft, yCoord);
             double rightXbyY = getXbyY(firstRight, secondRight, yCoord);
@@ -128,7 +128,7 @@ namespace DynamicConvexHullCSharpRealization
             }
         }
 
-        private void goLeft(ref Treap<Point> current, ref Point currentPoint, ref Point minPoint, ref Point maxPoint,
+        private static void goLeft(ref Treap<Point> current, ref Point currentPoint, ref Point minPoint, ref Point maxPoint,
                             ref int toCut, ref int minToCut, ref int maxToCut)
         {
             if (current?.Left != null)
@@ -142,6 +142,8 @@ namespace DynamicConvexHullCSharpRealization
             }
             else if (minPoint != null)
             {
+                throw new Exception("ha haaaa!");
+
                 maxPoint = currentPoint;
                 maxToCut = toCut;
 
@@ -155,7 +157,7 @@ namespace DynamicConvexHullCSharpRealization
             }
         }
 
-        private void goRight(ref Treap<Point> current, ref Point currentPoint, ref Point minPoint, ref Point maxPoint,
+        private static void goRight(ref Treap<Point> current, ref Point currentPoint, ref Point minPoint, ref Point maxPoint,
                              ref int toCut, ref int minToCut, ref int maxToCut)
         {
             if (current?.Right != null)
@@ -169,6 +171,8 @@ namespace DynamicConvexHullCSharpRealization
             }
             else if (maxPoint != null)
             {
+                throw new Exception("ha haaaa!");
+
                 minPoint = currentPoint;
                 minToCut = toCut;
 
@@ -182,94 +186,94 @@ namespace DynamicConvexHullCSharpRealization
             }
         }
 
-        private bool makeDecisionAboutRotation(ref Treap<Point> leftTop, ref Point leftTopPoint, Point leftPrevPoint, Point leftNextPoint,
-                                               ref Point leftMinPoint, ref Point leftMaxPoint,
-                                               ref int toCutFromLeftHull, ref int minPointCutFromLeft, ref int maxPointCutFromLeft,
-                                               ref Treap<Point> rightTop, ref Point rightTopPoint, Point rightPrevPoint, Point rightNextPoint,
-                                               ref Point rightMinPoint, ref Point rightMaxPoint,
-                                               ref int toLeaveInRightHull, ref int minPointLeaveInRight, ref int maxPointLeaveInRight,
-                                               double mediumY, bool isLeftHalf)
+        private static bool makeDecisionAboutRotation(ref Treap<Point> lowerCurrent, ref Point lowerCurrentPoint, Point lowerPrevPoint, Point lowerNextPoint,
+                                                      ref Point lowerMinPoint, ref Point lowerMaxPoint,
+                                                      ref int toCutFromLowerHull, ref int minPointCutFromLower, ref int maxPointCutFromLower,
+                                                      ref Treap<Point> upperCurrent, ref Point upperCurrentPoint, Point upperPrevPoint, Point upperNextPoint,
+                                                      ref Point upperMinPoint, ref Point upperMaxPoint,
+                                                      ref int toLeaveInUpperHull, ref int minPointLeaveInUpper, ref int maxPointLeaveInUpper,
+                                                      double mediumY, bool isLeftHalf)
         {
-            PointPosition leftPrevPos = determinePosition(leftTopPoint, rightTopPoint, leftPrevPoint, isLeftHalf);
-            PointPosition leftNextPos = determinePosition(leftTopPoint, rightTopPoint, leftNextPoint, isLeftHalf);
+            PointPosition lowerPrevPos = determinePosition(lowerCurrentPoint, upperCurrentPoint, lowerPrevPoint, isLeftHalf);
+            PointPosition lowerNextPos = determinePosition(lowerCurrentPoint, upperCurrentPoint, lowerNextPoint, isLeftHalf);
 
-            PointPosition rightPrevPos = determinePosition(leftTopPoint, rightTopPoint, rightPrevPoint, isLeftHalf);
-            PointPosition rightNextPos = determinePosition(leftTopPoint, rightTopPoint, rightNextPoint, isLeftHalf);
+            PointPosition upperPrevPos = determinePosition(lowerCurrentPoint, upperCurrentPoint, upperPrevPoint, isLeftHalf);
+            PointPosition upperNextPos = determinePosition(lowerCurrentPoint, upperCurrentPoint, upperNextPoint, isLeftHalf);
 
-            if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Right &&
-                rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Right) // A - found
+            if (lowerPrevPos == PointPosition.Right && lowerNextPos == PointPosition.Right &&
+                upperPrevPos == PointPosition.Right && upperNextPos == PointPosition.Right) // A - found
             {
                 return true; // answer found
             }
-            else if (leftPrevPos == PointPosition.Left && leftNextPos == PointPosition.Right &&
-                     rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Right) // B
+            else if (lowerPrevPos == PointPosition.Left && lowerNextPos == PointPosition.Right &&
+                     upperPrevPos == PointPosition.Right && upperNextPos == PointPosition.Right) // B
             {
-                goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
-                       ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+                goLeft(ref lowerCurrent, ref lowerCurrentPoint, ref lowerMinPoint, ref lowerMaxPoint,
+                       ref toCutFromLowerHull, ref minPointCutFromLower, ref maxPointCutFromLower);
 
                 //goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
                 //       ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
             }
-            else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Left &&
-                     rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Right) // C
+            else if (lowerPrevPos == PointPosition.Right && lowerNextPos == PointPosition.Left &&
+                     upperPrevPos == PointPosition.Right && upperNextPos == PointPosition.Right) // C
             {
-                goRight(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
-                       ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+                goRight(ref lowerCurrent, ref lowerCurrentPoint, ref lowerMinPoint, ref lowerMaxPoint,
+                       ref toCutFromLowerHull, ref minPointCutFromLower, ref maxPointCutFromLower);
 
                 //goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
                 //       ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
             }
-            else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Right &&
-                     rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Left) // D
+            else if (lowerPrevPos == PointPosition.Right && lowerNextPos == PointPosition.Right &&
+                     upperPrevPos == PointPosition.Right && upperNextPos == PointPosition.Left) // D
             {
                 //goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
                 //       ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
 
-                goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                       ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                goRight(ref upperCurrent, ref upperCurrentPoint, ref upperMinPoint, ref upperMaxPoint,
+                       ref toLeaveInUpperHull, ref minPointLeaveInUpper, ref maxPointLeaveInUpper);
             }
-            else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Right &&
-                     rightPrevPos == PointPosition.Left && rightNextPos == PointPosition.Right) // E
+            else if (lowerPrevPos == PointPosition.Right && lowerNextPos == PointPosition.Right &&
+                     upperPrevPos == PointPosition.Left && upperNextPos == PointPosition.Right) // E
             {
                 //goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
                 //       ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
 
-                goLeft(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                       ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                goLeft(ref upperCurrent, ref upperCurrentPoint, ref upperMinPoint, ref upperMaxPoint,
+                       ref toLeaveInUpperHull, ref minPointLeaveInUpper, ref maxPointLeaveInUpper);
             }
-            else if (leftPrevPos == PointPosition.Left && leftNextPos == PointPosition.Right &&
-                     rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Left) // F
+            else if (lowerPrevPos == PointPosition.Left && lowerNextPos == PointPosition.Right &&
+                     upperPrevPos == PointPosition.Right && upperNextPos == PointPosition.Left) // F
             {
-                goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
-                       ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+                goLeft(ref lowerCurrent, ref lowerCurrentPoint, ref lowerMinPoint, ref lowerMaxPoint,
+                       ref toCutFromLowerHull, ref minPointCutFromLower, ref maxPointCutFromLower);
 
-                goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                       ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                goRight(ref upperCurrent, ref upperCurrentPoint, ref upperMinPoint, ref upperMaxPoint,
+                       ref toLeaveInUpperHull, ref minPointLeaveInUpper, ref maxPointLeaveInUpper);
             }
-            else if (leftPrevPos == PointPosition.Left && leftNextPos == PointPosition.Right &&
-                     rightPrevPos == PointPosition.Left && rightNextPos == PointPosition.Right) // G
+            else if (lowerPrevPos == PointPosition.Left && lowerNextPos == PointPosition.Right &&
+                     upperPrevPos == PointPosition.Left && upperNextPos == PointPosition.Right) // G
             {
-                goLeft(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
-                       ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+                goLeft(ref lowerCurrent, ref lowerCurrentPoint, ref lowerMinPoint, ref lowerMaxPoint,
+                       ref toCutFromLowerHull, ref minPointCutFromLower, ref maxPointCutFromLower);
             }
-            else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Left &&
-                     rightPrevPos == PointPosition.Right && rightNextPos == PointPosition.Left) // H
+            else if (lowerPrevPos == PointPosition.Right && lowerNextPos == PointPosition.Left &&
+                     upperPrevPos == PointPosition.Right && upperNextPos == PointPosition.Left) // H
             {
-                goRight(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                       ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                goRight(ref upperCurrent, ref upperCurrentPoint, ref upperMinPoint, ref upperMaxPoint,
+                       ref toLeaveInUpperHull, ref minPointLeaveInUpper, ref maxPointLeaveInUpper);
             }
-            else if (leftPrevPos == PointPosition.Right && leftNextPos == PointPosition.Left &&
-                     rightPrevPos == PointPosition.Left && rightNextPos == PointPosition.Right) // I - the hardest
+            else if (lowerPrevPos == PointPosition.Right && lowerNextPos == PointPosition.Left &&
+                     upperPrevPos == PointPosition.Left && upperNextPos == PointPosition.Right) // I - the hardest
             {
-                if (isIntersectLoverY(leftTopPoint, leftNextPoint, rightTopPoint, rightPrevPoint, mediumY, isLeftHalf))
+                if (isIntersectLoverY(lowerCurrentPoint, lowerNextPoint, upperCurrentPoint, upperPrevPoint, mediumY, isLeftHalf))
                 {
-                    goRight(ref leftTop, ref leftTopPoint, ref leftMinPoint, ref leftMaxPoint,
-                       ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft);
+                    goRight(ref lowerCurrent, ref lowerCurrentPoint, ref lowerMinPoint, ref lowerMaxPoint,
+                       ref toCutFromLowerHull, ref minPointCutFromLower, ref maxPointCutFromLower);
                 }
                 else
                 {
-                    goLeft(ref rightTop, ref rightTopPoint, ref rightMinPoint, ref rightMaxPoint,
-                       ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight);
+                    goLeft(ref upperCurrent, ref upperCurrentPoint, ref upperMinPoint, ref upperMaxPoint,
+                       ref toLeaveInUpperHull, ref minPointLeaveInUpper, ref maxPointLeaveInUpper);
                 }
             }
             else
@@ -280,91 +284,89 @@ namespace DynamicConvexHullCSharpRealization
             return false; // answer not found
         }
 
-        private void recount(RedBlackNode current)
+        private static void recount(RedBlackNode current)
         {
             recount(current, true);
             recount(current, false);
         }
 
-        private void recount(RedBlackNode current, bool isLeftHalf)
+        private static void recount(RedBlackNode current, bool isLeftHalf)
         {
             if (current != null && current.Left != null && current.Right != null && current.GetConvexHull(isLeftHalf) == null)
             {
-                // left is lover hull and right is upper hull
-
                 current.MaxPoint = Utils.Max(current.Left.MaxPoint, current.Right.MaxPoint);
 
-                Treap<Point> leftTop = current.Left.GetConvexHull(isLeftHalf);
-                Treap<Point> rightTop = current.Right.GetConvexHull(isLeftHalf);
-                Point leftTopPoint = leftTop.Key;
-                Point rightTopPoint = rightTop.Key;
+                Treap<Point> lowerCurrent = current.Left.GetConvexHull(isLeftHalf);
+                Treap<Point> upperCurrent = current.Right.GetConvexHull(isLeftHalf);
+                Point loweCurrentPoint = lowerCurrent.Key;
+                Point upperCurrentPoint = upperCurrent.Key;
 
-                Point leftMinPoint = null;
-                Point leftMaxPoint = null;
-                Point rightMinPoint = null;
-                Point rightMaxPoint = null;
+                Point lowerMinPoint = null;
+                Point lowerMaxPoint = null;
+                Point upperMinPoint = null;
+                Point upperMaxPoint = null;
 
-                double mediumY = (leftTop.MaxElement.Y + rightTop.MinElement.Y) / 2;
+                double mediumY = (lowerCurrent.MaxElement.Y + upperCurrent.MinElement.Y) / 2;
 
-                int toCutFromLeftHull = Treap<Point>.GetSize(leftTop?.Left) + 1;
-                int toLeaveInRightHull = Treap<Point>.GetSize(rightTop?.Left) + 1;
+                int toCutFromLowerHull = Treap<Point>.GetSize(lowerCurrent?.Left) + 1;
+                int toLeaveInUpperHull = Treap<Point>.GetSize(upperCurrent?.Left) + 1;
 
-                int minPointCutFromLeft = 0;
-                int maxPointCutFromLeft = leftTop.Size;
+                int minPointCutFromLower = 0;
+                int maxPointCutFromLower = lowerCurrent.Size;
 
-                int minPointLeaveInRight = 0;
-                int maxPointLeaveInRight = rightTop.Size;
+                int minPointLeaveInUpper = 0;
+                int maxPointLeaveInUpper = upperCurrent.Size;
 
                 bool bridgeFound = false;
                 while (!bridgeFound)
                 {
-                    Point leftPrevPoint = leftTop?.Left != null ? leftTop.Left.MaxElement : leftMinPoint;
-                    Point leftNextPoint = leftTop?.Right != null ? leftTop.Right.MinElement : leftMaxPoint;
+                    Point lowerPrevPoint = lowerCurrent?.Left != null ? lowerCurrent.Left.MaxElement : lowerMinPoint;
+                    Point lowerNextPoint = lowerCurrent?.Right != null ? lowerCurrent.Right.MinElement : lowerMaxPoint;
 
-                    Point rightPrevPoint = rightTop?.Left != null ? rightTop.Left.MaxElement : rightMinPoint;
-                    Point rightNextPoint = rightTop?.Right != null ? rightTop.Right.MinElement : rightMaxPoint;
+                    Point upperPrevPoint = upperCurrent?.Left != null ? upperCurrent.Left.MaxElement : upperMinPoint;
+                    Point upperNextPoint = upperCurrent?.Right != null ? upperCurrent.Right.MinElement : upperMaxPoint;
 
-                    bridgeFound = makeDecisionAboutRotation(ref leftTop, ref leftTopPoint, leftPrevPoint, leftNextPoint,
-                                               ref leftMinPoint, ref leftMaxPoint,
-                                               ref toCutFromLeftHull, ref minPointCutFromLeft, ref maxPointCutFromLeft,
-                                               ref rightTop, ref rightTopPoint, rightPrevPoint, rightNextPoint,
-                                               ref rightMinPoint, ref rightMaxPoint,
-                                               ref toLeaveInRightHull, ref minPointLeaveInRight, ref maxPointLeaveInRight,
+                    bridgeFound = makeDecisionAboutRotation(ref lowerCurrent, ref loweCurrentPoint, lowerPrevPoint, lowerNextPoint,
+                                               ref lowerMinPoint, ref lowerMaxPoint,
+                                               ref toCutFromLowerHull, ref minPointCutFromLower, ref maxPointCutFromLower,
+                                               ref upperCurrent, ref upperCurrentPoint, upperPrevPoint, upperNextPoint,
+                                               ref upperMinPoint, ref upperMaxPoint,
+                                               ref toLeaveInUpperHull, ref minPointLeaveInUpper, ref maxPointLeaveInUpper,
                                                mediumY, isLeftHalf);
                 }
                 // we want to have top point in right treap after split
-                --toLeaveInRightHull;
+                --toLeaveInUpperHull;
 
-                Treap<Point> leftLeftHalf;
-                Treap<Point> leftRightHalf;
-                Treap<Point> rightLeftHalf;
-                Treap<Point> rightRightHalf;
+                Treap<Point> leftPartOfLowerHull;
+                Treap<Point> rightPartOfLowerHull;
+                Treap<Point> leftPartOfUpperHull;
+                Treap<Point> rightPartOfUpperHull;
 
-                if (leftTopPoint.Y == rightTopPoint.Y)
+                if (loweCurrentPoint.Y == upperCurrentPoint.Y)
                 {
-                    if ((leftTopPoint.X < rightTopPoint.X && isLeftHalf) ||
-                        (leftTopPoint.X > rightTopPoint.X && !isLeftHalf))
+                    if ((loweCurrentPoint.X < upperCurrentPoint.X && isLeftHalf) ||
+                        (loweCurrentPoint.X > upperCurrentPoint.X && !isLeftHalf))
                     {
-                        ++toLeaveInRightHull;
+                        ++toLeaveInUpperHull;
                     }
-                    else if ((leftTopPoint.X > rightTopPoint.X && isLeftHalf) ||
-                             (leftTopPoint.X < rightTopPoint.X && !isLeftHalf))
+                    else if ((loweCurrentPoint.X > upperCurrentPoint.X && isLeftHalf) ||
+                             (loweCurrentPoint.X < upperCurrentPoint.X && !isLeftHalf))
                     {
-                        --toCutFromLeftHull;
+                        --toCutFromLowerHull;
                     }
                     else
                     {
-                        toLeaveInRightHull++;
+                        toLeaveInUpperHull++;
                     }
                 }
 
-                current.SetLeftSubHullSize(isLeftHalf, toCutFromLeftHull);
-                Treap<Point>.SplitBySize(current.Left.GetConvexHull(isLeftHalf), toCutFromLeftHull, out leftLeftHalf, out leftRightHalf);
-                Treap<Point>.SplitBySize(current.Right.GetConvexHull(isLeftHalf), toLeaveInRightHull, out rightLeftHalf, out rightRightHalf);
+                current.SetLowerSubHullSize(isLeftHalf, toCutFromLowerHull);
+                Treap<Point>.SplitBySize(current.Left.GetConvexHull(isLeftHalf), toCutFromLowerHull, out leftPartOfLowerHull, out rightPartOfLowerHull);
+                Treap<Point>.SplitBySize(current.Right.GetConvexHull(isLeftHalf), toLeaveInUpperHull, out leftPartOfUpperHull, out rightPartOfUpperHull);
 
-                current.SetConvexHull(isLeftHalf, Treap<Point>.Merge(leftLeftHalf, rightRightHalf));
-                current.Left.SetConvexHull(isLeftHalf, leftRightHalf);
-                current.Right.SetConvexHull(isLeftHalf, rightLeftHalf);
+                current.SetConvexHull(isLeftHalf, Treap<Point>.Merge(leftPartOfLowerHull, rightPartOfUpperHull));
+                current.Left.SetConvexHull(isLeftHalf, rightPartOfLowerHull);
+                current.Right.SetConvexHull(isLeftHalf, leftPartOfUpperHull);
             }
         }
 
@@ -380,7 +382,7 @@ namespace DynamicConvexHullCSharpRealization
             {
                 Treap<Point> leftHalf;
                 Treap<Point> rightHalf;
-                Treap<Point>.SplitBySize(current.GetConvexHull(isLeftHalf), current.GetLeftSubHullSize(isLeftHalf), out leftHalf, out rightHalf);
+                Treap<Point>.SplitBySize(current.GetConvexHull(isLeftHalf), current.GeLowerSubHullSize(isLeftHalf), out leftHalf, out rightHalf);
 
                 current.Left.SetConvexHull(isLeftHalf, Treap<Point>.Merge(leftHalf, current.Left.GetConvexHull(isLeftHalf)));
                 current.Right.SetConvexHull(isLeftHalf, Treap<Point>.Merge(current.Right.GetConvexHull(isLeftHalf), rightHalf));
@@ -389,7 +391,7 @@ namespace DynamicConvexHullCSharpRealization
             }
         }
 
-        private RedBlackNode recountToUp(RedBlackNode current)
+        private static RedBlackNode recountToUp(RedBlackNode current)
         {
             while (current != null && !current.IsRoot)
             {
@@ -404,11 +406,11 @@ namespace DynamicConvexHullCSharpRealization
 
         #region red_black_tree_operations
 
-        private RedBlackNode insert(RedBlackNode current, Point pointToInsert)
+        private static RedBlackNode insert(RedBlackNode current, Point pointToInsert)
         {
-            if (current.IsLeaf)
+            if (current.IsLeaf && pointToInsert.CompareTo(current.MaxPoint) != 0)
             {
-                if (pointToInsert.CompareTo(current.MaxPoint) <= 0)
+                if (pointToInsert.CompareTo(current.MaxPoint) < 0)
                 {
                     current.Left = new RedBlackNode(pointToInsert, current);
                     current.Right = new RedBlackNode(current.MaxPoint, current);
@@ -424,7 +426,7 @@ namespace DynamicConvexHullCSharpRealization
                 recount(current);
                 return initialInsertRepair(current);
             }
-            else
+            else if (!current.IsLeaf)
             {
                 pushSubHullDown(current);
 
@@ -437,19 +439,20 @@ namespace DynamicConvexHullCSharpRealization
                     return insert(current.Right, pointToInsert);
                 }
             }
+            return recountToUp(current);
         }
 
-        private RedBlackNode initialInsertRepair(RedBlackNode current)
+        private static RedBlackNode initialInsertRepair(RedBlackNode current)
         {
-            // considering the spacific of our insertion - if current not black (in this case we have to do nothing)
+            // considering the specific of our insertion - if current not black (in this case we have to do nothing)
             // current and current.Brother were red leafs before last insert, so we can make start already from 
             // case 3 in https://ru.wikipedia.org/wiki/%D0%9A%D1%80%D0%B0%D1%81%D0%BD%D0%BE-%D1%87%D1%91%D1%80%D0%BD%D0%BE%D0%B5_%D0%B4%D0%B5%D1%80%D0%B5%D0%B2%D0%BE 
 
-            if (current.IsBlack == RedBlackNode.Color.Red)
+            if (current.NodeColor == RedBlackNode.Color.Red)
             {
-                current.IsBlack = RedBlackNode.Color.Black;
-                current.Brother.IsBlack = RedBlackNode.Color.Black;
-                current.Parent.IsBlack = RedBlackNode.Color.Red;
+                current.NodeColor = RedBlackNode.Color.Black;
+                current.Brother.NodeColor = RedBlackNode.Color.Black;
+                current.Parent.NodeColor = RedBlackNode.Color.Red;
                 return repairAfterInsert(current.Parent);
             }
             else
@@ -458,21 +461,21 @@ namespace DynamicConvexHullCSharpRealization
             }
         }
 
-        private RedBlackNode repairAfterInsert(RedBlackNode current)
+        private static RedBlackNode repairAfterInsert(RedBlackNode current)
         {
             recount(current);
             if (current.IsRoot)
             {
-                current.IsBlack = RedBlackNode.Color.Black;
+                current.NodeColor = RedBlackNode.Color.Black;
                 return current;
             }
-            else if (current.Parent.IsBlack == RedBlackNode.Color.Red)
+            else if (current.Parent.NodeColor == RedBlackNode.Color.Red)
             {
-                if (current.Uncle != null && current.Uncle.IsBlack == RedBlackNode.Color.Red)
+                if (current.Uncle != null && current.Uncle.NodeColor == RedBlackNode.Color.Red)
                 {
-                    current.Parent.IsBlack = RedBlackNode.Color.Black;
-                    current.Uncle.IsBlack = RedBlackNode.Color.Black;
-                    current.Grandparent.IsBlack = RedBlackNode.Color.Red;
+                    current.Parent.NodeColor = RedBlackNode.Color.Black;
+                    current.Uncle.NodeColor = RedBlackNode.Color.Black;
+                    current.Grandparent.NodeColor = RedBlackNode.Color.Red;
 
                     recount(current.Parent);
 
@@ -482,6 +485,7 @@ namespace DynamicConvexHullCSharpRealization
                 {
                     if (current.Grandparent.Left == current.Parent && current.Parent.Right == current)
                     {
+                        pushSubHullDown(current);
                         current.Parent.RotateLeft();
                         current = current.Left;
 
@@ -489,16 +493,15 @@ namespace DynamicConvexHullCSharpRealization
                     }
                     else if (current.Grandparent.Right == current.Parent && current.Parent.Left == current)
                     {
+                        pushSubHullDown(current);
                         current.Parent.RotateRight();
                         current = current.Right;
 
                         recount(current);
                     }
 
-                    current.Parent.IsBlack = RedBlackNode.Color.Black;
-                    current.Grandparent.IsBlack = RedBlackNode.Color.Red;
-
-                    recount(current.Parent);
+                    current.Parent.NodeColor = RedBlackNode.Color.Black;
+                    current.Grandparent.NodeColor = RedBlackNode.Color.Red;
 
                     if (current == current.Parent.Left)
                     {
@@ -517,7 +520,7 @@ namespace DynamicConvexHullCSharpRealization
             return recountToUp(current);
         }
 
-        private RedBlackNode delete(RedBlackNode current, Point pointToDelete)
+        private static RedBlackNode delete(RedBlackNode current, Point pointToDelete)
         {
             // we will delete only leafs
             // every node have two children
@@ -537,9 +540,9 @@ namespace DynamicConvexHullCSharpRealization
                 }
                 current.Brother.Parent = current.Grandparent;
 
-                if (current.Brother.IsBlack == RedBlackNode.Color.Red || current.Parent.IsBlack == RedBlackNode.Color.Red)
+                if (current.Brother.NodeColor == RedBlackNode.Color.Red || current.Parent.NodeColor == RedBlackNode.Color.Red)
                 {
-                    current.Brother.IsBlack = RedBlackNode.Color.Black;
+                    current.Brother.NodeColor = RedBlackNode.Color.Black;
 
                     return recountToUp(current.Brother);
                 }
@@ -564,7 +567,7 @@ namespace DynamicConvexHullCSharpRealization
             return recountToUp(current);
         }
 
-        private RedBlackNode repairAfterDelete(RedBlackNode current)
+        private static RedBlackNode repairAfterDelete(RedBlackNode current)
         {
             recount(current);
             if (current.IsRoot)
@@ -573,10 +576,11 @@ namespace DynamicConvexHullCSharpRealization
             }
             else
             {
-                if (current.Brother.IsBlack == RedBlackNode.Color.Red)
+                if (current.Brother.NodeColor == RedBlackNode.Color.Red)
                 {
-                    current.Parent.IsBlack = RedBlackNode.Color.Red;
-                    current.Brother.IsBlack = RedBlackNode.Color.Black;
+                    current.Parent.NodeColor = RedBlackNode.Color.Red;
+                    current.Brother.NodeColor = RedBlackNode.Color.Black;
+                    pushSubHullDown(current.Brother);
                     if (current.Parent.Left == current)
                     {
                         current.Parent.RotateLeft();
@@ -587,21 +591,21 @@ namespace DynamicConvexHullCSharpRealization
                     }
                 }
 
-                if (current.Parent.IsBlack == RedBlackNode.Color.Black &&
-                    current.Brother.IsBlack == RedBlackNode.Color.Black &&
-                    current.Brother.Left.IsBlack == RedBlackNode.Color.Black &&
-                    current.Brother.Right.IsBlack == RedBlackNode.Color.Black)
+                if (current.Parent.NodeColor == RedBlackNode.Color.Black &&
+                    current.Brother.NodeColor == RedBlackNode.Color.Black &&
+                    current.Brother.Left.NodeColor == RedBlackNode.Color.Black &&
+                    current.Brother.Right.NodeColor == RedBlackNode.Color.Black)
                 {
-                    current.Brother.IsBlack = RedBlackNode.Color.Red;
+                    current.Brother.NodeColor = RedBlackNode.Color.Red;
                     return repairAfterDelete(current.Parent);
                 }
-                else if (current.Parent.IsBlack == RedBlackNode.Color.Red &&
-                    current.Brother.IsBlack == RedBlackNode.Color.Black &&
-                    current.Brother.Left.IsBlack == RedBlackNode.Color.Black &&
-                    current.Brother.Right.IsBlack == RedBlackNode.Color.Black)
+                else if (current.Parent.NodeColor == RedBlackNode.Color.Red &&
+                    current.Brother.NodeColor == RedBlackNode.Color.Black &&
+                    current.Brother.Left.NodeColor == RedBlackNode.Color.Black &&
+                    current.Brother.Right.NodeColor == RedBlackNode.Color.Black)
                 {
-                    current.Brother.IsBlack = RedBlackNode.Color.Red;
-                    current.Parent.IsBlack = RedBlackNode.Color.Black;
+                    current.Brother.NodeColor = RedBlackNode.Color.Red;
+                    current.Parent.NodeColor = RedBlackNode.Color.Black;
                     return recountToUp(current.Parent);
                 }
                 else // if (current.Brother.IsBlack) always true
@@ -609,41 +613,41 @@ namespace DynamicConvexHullCSharpRealization
                     pushSubHullDown(current.Brother);
 
                     if (current.Parent.Left == current &&
-                        current.Brother.Left.IsBlack == RedBlackNode.Color.Red &&
-                        current.Brother.Right.IsBlack == RedBlackNode.Color.Black)
+                        current.Brother.Left.NodeColor == RedBlackNode.Color.Red &&
+                        current.Brother.Right.NodeColor == RedBlackNode.Color.Black)
                     {
-                        current.Brother.IsBlack = RedBlackNode.Color.Red;
-                        current.Brother.Left.IsBlack = RedBlackNode.Color.Black;
+                        current.Brother.NodeColor = RedBlackNode.Color.Red;
+                        current.Brother.Left.NodeColor = RedBlackNode.Color.Black;
 
+                        pushSubHullDown(current.Brother.Left);
                         current.Brother.RotateRight();
 
                         recount(current.Brother.Right);
-                        recount(current.Brother);
                     }
                     else if (current.Parent.Right == current &&
-                        current.Brother.Left.IsBlack == RedBlackNode.Color.Black &&
-                        current.Brother.Right.IsBlack == RedBlackNode.Color.Red)
+                        current.Brother.Left.NodeColor == RedBlackNode.Color.Black &&
+                        current.Brother.Right.NodeColor == RedBlackNode.Color.Red)
                     {
-                        current.Brother.IsBlack = RedBlackNode.Color.Red;
-                        current.Brother.Right.IsBlack = RedBlackNode.Color.Black;
+                        current.Brother.NodeColor = RedBlackNode.Color.Red;
+                        current.Brother.Right.NodeColor = RedBlackNode.Color.Black;
 
+                        pushSubHullDown(current.Brother.Right);
                         current.Brother.RotateLeft();
 
                         recount(current.Brother.Left);
-                        recount(current.Brother);
                     }
 
-                    current.Brother.IsBlack = current.Parent.IsBlack;
-                    current.Parent.IsBlack = RedBlackNode.Color.Black;
+                    current.Brother.NodeColor = current.Parent.NodeColor;
+                    current.Parent.NodeColor = RedBlackNode.Color.Black;
 
                     if (current == current.Parent.Left)
                     {
-                        current.Brother.Right.IsBlack = RedBlackNode.Color.Black;
+                        current.Brother.Right.NodeColor = RedBlackNode.Color.Black;
                         current.Parent.RotateLeft();
                     }
                     else
                     {
-                        current.Brother.Left.IsBlack = RedBlackNode.Color.Black;
+                        current.Brother.Left.NodeColor = RedBlackNode.Color.Black;
                         current.Parent.RotateRight();
                     }
                     return recountToUp(current.Parent);

@@ -19,44 +19,48 @@ namespace DynamicConvexHullCSharpRealization
 
             List<Point> list = new List<Point>();
 
-            var rand = new Random();
+            var rand = new Random(33);
 
             while (true)
             {
 
-                for (int i = 0; i < 100; ++i)
+                for (int i = 0; i < 1000; ++i)
                 {
                     Point p = new Point(rand.Next(5, 1200), rand.Next(5, 600));
                     hull.Insert(p);
                     list.Add(p);
 
-                    Console.Clear();
+                    //Console.Clear();
 
-                    List<Point> res = hull.GetHull();
+                    //List<Point> res = hull.GetHull();
 
-                    DrawGraphic.DrawPolygon(res);
-                    DrawGraphic.DrawPoints(list);
+                    //DrawGraphic.DrawPolygon(res);
+                    //DrawGraphic.DrawPoints(list);
 
                     //Thread.Sleep(200);
-                    Console.ReadKey();
+                    //Console.ReadKey();
                 }
 
-                for (int i = 0; i < 100; ++i)
+                Console.WriteLine(DateTime.Now);
+
+                for (int i = 0; i < 1000; ++i)
                 {
                     Point p = list[0];
                     hull.Delete(p);
                     list.Remove(p);
 
-                    Console.Clear();
+                    //Console.Clear();
 
-                    List<Point> res = hull.GetHull();
+                    //List<Point> res = hull.GetHull();
 
-                    DrawGraphic.DrawPolygon(res);
-                    DrawGraphic.DrawPoints(list);
+                    //DrawGraphic.DrawPolygon(res);
+                    //DrawGraphic.DrawPoints(list);
 
                     //Thread.Sleep(200);
-                    Console.ReadKey();
+                    //Console.ReadKey();
                 }
+
+                Console.WriteLine("--");
             }
 
             Console.ReadKey();

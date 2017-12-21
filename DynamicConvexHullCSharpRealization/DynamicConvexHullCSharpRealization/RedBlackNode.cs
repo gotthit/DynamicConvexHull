@@ -16,17 +16,17 @@ namespace DynamicConvexHullCSharpRealization
                 Black
             }
 
-            private int leftLeftSubHullSize;
+            private int leftLowerSubHullSize;
             private Treap<Point> leftConvexHull;
 
-            private int rightLeftSubHullSize;
+            private int rightLowerSubHullSize { get; set; }
             private Treap<Point> rightConvexHull;
 
             public RedBlackNode Left;
             public RedBlackNode Right;
             public RedBlackNode Parent;
 
-            public Color IsBlack;
+            public Color NodeColor;
 
             public Point MaxPoint;
 
@@ -65,20 +65,20 @@ namespace DynamicConvexHullCSharpRealization
                 }
             }
 
-            public int GetLeftSubHullSize(bool isLeftHalf)
+            public int GeLowerSubHullSize(bool isLeftHalf)
             {
-                return isLeftHalf ? leftLeftSubHullSize : rightLeftSubHullSize;
+                return isLeftHalf ? leftLowerSubHullSize : rightLowerSubHullSize;
             }
 
-            public void SetLeftSubHullSize(bool isLeftHalf, int value)
+            public void SetLowerSubHullSize(bool isLeftHalf, int value)
             {
                 if (isLeftHalf)
                 {
-                    leftLeftSubHullSize = value;
+                    leftLowerSubHullSize = value;
                 }
                 else
                 {
-                    rightLeftSubHullSize = value;
+                    rightLowerSubHullSize = value;
                 }
             }
 
@@ -107,13 +107,13 @@ namespace DynamicConvexHullCSharpRealization
 
                 MaxPoint = newPoint;
 
-                IsBlack = IsRoot ? Color.Black : Color.Red;
+                NodeColor = IsRoot ? Color.Black : Color.Red;
 
                 leftConvexHull = null;
-                leftLeftSubHullSize = 0;
+                leftLowerSubHullSize = 0;
 
                 rightConvexHull = null;
-                rightLeftSubHullSize = 0;
+                rightLowerSubHullSize = 0;
             }
 
             public RedBlackNode(Point newPoint, RedBlackNode newParent = null) : this(newPoint, null, null, newParent)
@@ -126,8 +126,6 @@ namespace DynamicConvexHullCSharpRealization
             {
                 if (Right != null)
                 {
-                    pushSubHullDown(Right);
-
                     RedBlackNode rightSon = Right;
                     rightSon.Parent = Parent;
 
@@ -156,8 +154,6 @@ namespace DynamicConvexHullCSharpRealization
             {
                 if (Left != null)
                 {
-                    pushSubHullDown(Left);
-
                     RedBlackNode leftSon = Left;
                     leftSon.Parent = Parent;
 

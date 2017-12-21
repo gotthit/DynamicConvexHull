@@ -58,29 +58,6 @@ namespace DynamicConvexHullCSharpRealization
             }
         }
 
-        public static void Split(Treap<T> current, T divider, out Treap<T> leftHalf, out Treap<T> rightHalf)
-        {
-            if (current == null)
-            {
-                leftHalf = null;
-                rightHalf = null;
-            }
-            if (divider.CompareTo(current.Key) > 0)
-            {
-                Split(current.Right, divider, out leftHalf, out rightHalf);
-                current.Left = rightHalf;
-                current.update();
-                rightHalf = current;
-            }
-            else
-            {
-                Split(current.Left, divider, out leftHalf, out rightHalf);
-                current.Right = leftHalf;
-                current.update();
-                leftHalf = current;
-            }
-        }
-
         public static void SplitBySize(Treap<T> current, int toCut, out Treap<T> leftHalf, out Treap<T> rightHalf)
         {
             if (current == null)
