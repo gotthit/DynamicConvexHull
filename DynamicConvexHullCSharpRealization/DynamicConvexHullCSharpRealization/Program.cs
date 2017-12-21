@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DynamicConvexHullCSharpRealization
@@ -16,83 +17,47 @@ namespace DynamicConvexHullCSharpRealization
 
             //hull.Delete(new Point(, ));
 
-            //hull.Insert(new Point(4, 2));
+            List<Point> list = new List<Point>();
 
-            //hull.Insert(new Point(2, 4));
+            var rand = new Random();
 
-            //hull.Insert(new Point(1, 0));
+            while (true)
+            {
 
-            //hull.Insert(new Point(5, 5));
+                for (int i = 0; i < 100; ++i)
+                {
+                    Point p = new Point(rand.Next(5, 1200), rand.Next(5, 600));
+                    hull.Insert(p);
+                    list.Add(p);
 
-            //hull.Insert(new Point(0, 0));
+                    Console.Clear();
 
-            //hull.Insert(new Point(4, 4));
+                    List<Point> res = hull.GetHull();
 
-            //hull.Insert(new Point(3, 3));
+                    DrawGraphic.DrawPolygon(res);
+                    DrawGraphic.DrawPoints(list);
 
-            //hull.Insert(new Point(2, 2));
+                    //Thread.Sleep(200);
+                    Console.ReadKey();
+                }
 
-            //hull.Insert(new Point(3, 2));
+                for (int i = 0; i < 100; ++i)
+                {
+                    Point p = list[0];
+                    hull.Delete(p);
+                    list.Remove(p);
 
-            //hull.Insert(new Point(0, 1));
+                    Console.Clear();
 
-            //hull.Insert(new Point(1, 3));
+                    List<Point> res = hull.GetHull();
 
-            //hull.Insert(new Point(4, 1));
+                    DrawGraphic.DrawPolygon(res);
+                    DrawGraphic.DrawPoints(list);
 
-            //var rand = new Random(23523);
-
-            //for (int i = 0; i < 10000; ++i)
-            //{
-            //    hull.Insert(new Point(rand.Next(-10000, 10000), rand.Next(-10000, 10000)));
-            //}
-
-            //for (int i = 0; i < 10000; ++i)
-            //{
-            //    hull.Delete(new Point(rand.Next(-10000, 10000), rand.Next(-10000, 10000)));
-            //}
-
-            //hull.Delete(new Point(1, 3));
-            //hull.Delete(new Point(1, 3));
-            //hull.Delete(new Point(1, 3));
-            //hull.Delete(new Point(1, 3));
-
-
-            //hull.Delete(new Point(5, 5));
-
-            //hull.Delete(new Point(4, 4));
-
-            //hull.Delete(new Point(0, 1));
-
-            //hull.Delete(new Point(0, 0));
-
-            //hull.Delete(new Point(1, 3)); // maybe should check here
-
-            //hull.Delete(new Point(3, 3));
-
-            //hull.Delete(new Point(2, 4));
-
-            //hull.Delete(new Point(2, 2));
-
-            //hull.Delete(new Point(4, 1));
-
-            //hull.Delete(new Point(1, 0));
-
-            //hull.Delete(new Point(3, 2));
-
-            //hull.Delete(new Point(4, 2));
-
-
-
-            hull.Insert(new Point(4, 4));
-            hull.Insert(new Point(5, 5));
-            //hull.Insert(new Point(7, 1));
-
-            //hull.Insert(new Point(1, 3));
-
-            List<Point> res = hull.GetHull();
-            res.ForEach(a => Console.Write(a + " "));
-            Console.WriteLine();
+                    //Thread.Sleep(200);
+                    Console.ReadKey();
+                }
+            }
 
             Console.ReadKey();
         }
