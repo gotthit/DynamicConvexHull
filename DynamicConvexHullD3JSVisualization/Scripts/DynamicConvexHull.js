@@ -44,7 +44,7 @@ class DynamicConvexHull {
         }
         while (right_hull_array.length - end_right < left_hull_array.length &&
             end_right >= 0 &&
-            left_hull_array[left_hull_array.length - end_right].compare_to(right_hull_array[end_right - 1]) == 0) {
+            left_hull_array[right_hull_array.length - end_right].compare_to(right_hull_array[end_right - 1]) == 0) {
 
             --end_right;
         }

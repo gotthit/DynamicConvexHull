@@ -35,7 +35,9 @@ function merge_treaps(left_treap, right_treap) {
     if (right_treap == null) {
         return left_treap;
     }
-    if (get_random_in_scope(0, left_treap.size + right_treap.size) < left_treap.size) {
+    if (left_treap.size > right_treap.size) { 
+        //(get_random_in_scope(0, left_treap.size + right_treap.size) < left_treap.size) { // TODO: return back
+
         left_treap.right_treap = merge_treaps(left_treap.right_treap, right_treap);
         left_treap.update();
         return left_treap;
@@ -50,7 +52,6 @@ class Treap {
 
     constructor(key, left_treap = null, right_treap = null) {
         this.key = key;
-        this.random_key = Math.random();
         this.left_treap = left_treap;
         this.right_treap = right_treap;
 
@@ -68,12 +69,12 @@ class Treap {
         this.min_point = this.key;
 
         if (this.left_treap != null) {
-            this.max_point = Math.max(this.max_point, this.left_treap.max_point);
-            this.min_point = Math.min(this.min_point, this.left_treap.min_point);
+            this.max_point = get_max_point(this.max_point, this.left_treap.max_point);
+            this.min_point = get_min_point(this.min_point, this.left_treap.min_point);
         }
         if (this.right_treap != null) {
-            this.max_point = Math.max(this.max_point, this.right_treap.max_point);
-            this.min_point = Math.min(this.min_point, this.right_treap.min_point);
+            this.max_point = get_max_point(this.max_point, this.right_treap.max_point);
+            this.min_point = get_min_point(this.min_point, this.right_treap.min_point);
         }
     }
 

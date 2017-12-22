@@ -35,7 +35,7 @@ function push_determined_sub_hull_down(current_node, is_left) {
 }
 
 function recount_to_up(current_node) {
-    if (current_node != null && !current_node.is_root()) {
+    while (current_node != null && !current_node.is_root()) {
         recount(current_node);
         current_node = current_node.parent;
     }
@@ -44,6 +44,11 @@ function recount_to_up(current_node) {
 }
 
 function recount(current_node) {
+
+    if (current_node.left_son != null && current_node.right_son != null) {
+        current_node.max_point = get_max_point(current_node.left_son.max_point, current_node.right_son.max_point);
+    }
+
     recount_determined_hull(current_node, true);
     recount_determined_hull(current_node, false);
 }
@@ -60,11 +65,6 @@ function recount_determined_hull(current_node, is_left) {
         current_node.left_son != null && 
         current_node.right_son != null && 
         current_node.get_convex_hull(is_left) == null) {
-    
-        current_node.max_point = current_node.left_son.max_point;
-        if (current_node.max_point.compare_to(current_node.right_son.max_point) < 0) {
-            current_node.max_point = current_node.right_son.max_point;
-        }
 
         current_lower_top = current_node.left_son.get_convex_hull(is_left);
         current_upper_top = current_node.right_son.get_convex_hull(is_left);
@@ -86,7 +86,7 @@ function recount_determined_hull(current_node, is_left) {
             }
             let next_lower_point = null;
             if (current_lower_top != null && current_lower_top.right_treap != null) {
-                previous_lower_point = current_lower_top.right_treap.min_point;
+                next_lower_point = current_lower_top.right_treap.min_point;
             }
 
             let previous_upper_point = null;
@@ -95,7 +95,7 @@ function recount_determined_hull(current_node, is_left) {
             }
             let next_upper_point = null;
             if (current_upper_top != null && current_upper_top.right_treap != null) {
-                previous_upper_point = current_upper_top.right_treap.min_point;
+                next_upper_point = current_upper_top.right_treap.min_point;
             }
 
             _make_decision_about_next_operation(
@@ -266,8 +266,8 @@ function get_x_coord_of_line_by_y(first_point, second_point, y) {
 }
 
 function is_intersection_of_tangents_lower_then_y(first_lower, second_lower, first_upper, second_upper, y, is_left) {
-    let x_of_lower_line = get_x_coord_of_line_by_y(first_lower, second_lower);
-    let x_of_upper_line = get_x_coord_of_line_by_y(first_upper, second_upper);
+    let x_of_lower_line = get_x_coord_of_line_by_y(first_lower, second_lower, y);
+    let x_of_upper_line = get_x_coord_of_line_by_y(first_upper, second_upper, y);
     if (is_left) {
         return x_of_lower_line < x_of_upper_line;
     } else {
@@ -279,7 +279,7 @@ function determine_point_position_on_hull(lower_top_point, upper_top_point, prev
 
     let previous_point_position = null;
     if (previous_point != null) {
-        determine_posotion(lower_top_point, upper_top_point, previous_point);
+        previous_point_position = determine_posotion(lower_top_point, upper_top_point, previous_point);
     }
     if (previous_point_position == null || previous_point_position == PointPosition.On) {
         previous_point_position = is_left ? PointPosition.Right : PointPosition.Left;
@@ -287,7 +287,7 @@ function determine_point_position_on_hull(lower_top_point, upper_top_point, prev
 
     let next_point_position = null;
     if (next_point != null) {
-        determine_posotion(lower_top_point, upper_top_point, next_point);
+        next_point_position = determine_posotion(lower_top_point, upper_top_point, next_point);
     }
     if (next_point_position == null || next_point_position == PointPosition.On) {
         next_point_position = is_left ? PointPosition.Right : PointPosition.Left;
@@ -298,20 +298,20 @@ function determine_point_position_on_hull(lower_top_point, upper_top_point, prev
             return PointOnHullPosition.OnTopOfHull;
         }
         if (previous_point_position == PointPosition.Right && next_point_position == PointPosition.Left) {
-            return PointOnHullPosition.AfterTopOfHull;
+            return PointOnHullPosition.BeforeTopOfHull;
         }
         if (previous_point_position == PointPosition.Left && next_point_position == PointPosition.Right) {
-            return PointOnHullPosition.BeforeTopOfHull;
+            return PointOnHullPosition.AfterTopOfHull;
         }
     } else {
         if (previous_point_position == PointPosition.Left && next_point_position == PointPosition.Left) {
             return PointOnHullPosition.OnTopOfHull;
         }
         if (previous_point_position == PointPosition.Left && next_point_position == PointPosition.Right) {
-            return PointOnHullPosition.AfterTopOfHull;
+            return PointOnHullPosition.BeforeTopOfHull;
         }
         if (previous_point_position == PointPosition.Right && next_point_position == PointPosition.Left) {
-            return PointOnHullPosition.BeforeTopOfHull;
+            return PointOnHullPosition.AfterTopOfHull;
         }
     }
     // other variants are impossible

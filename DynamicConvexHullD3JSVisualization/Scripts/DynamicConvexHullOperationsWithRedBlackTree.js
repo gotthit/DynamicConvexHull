@@ -18,9 +18,9 @@ function insert_point_to_hull(current_node, point_to_insert) {
         push_sub_hull_down(current_node);
 
         if (point_to_insert.compare_to(current_node.left_son.max_point) <= 0) {
-            insert_point_to_hull(current_node.left_son, point_to_insert);
+            return insert_point_to_hull(current_node.left_son, point_to_insert);
         } else {
-            insert_point_to_hull(current_node.right_son, point_to_insert);
+            return insert_point_to_hull(current_node.right_son, point_to_insert);
         }
     }
     return recount_to_up(current_node);
@@ -69,14 +69,17 @@ function repair_after_insert_case_4(current_node) {
 
         push_sub_hull_down(current_node);
         current_node.parent.rotate_left();
-        current_node = current_node.left;
+        current_node = current_node.left_son;
+
+        recount(current_node);
 
     } else if (current_node.parent.is_right_son() && current_node.is_left_son()) {
 
         push_sub_hull_down(current_node);
         current_node.parent.rotate_right();
-        current_node = current_node.right;
+        current_node = current_node.right_son;
 
+        recount(current_node);
     } 
     return repair_after_insert_case_5(current_node);
 }
