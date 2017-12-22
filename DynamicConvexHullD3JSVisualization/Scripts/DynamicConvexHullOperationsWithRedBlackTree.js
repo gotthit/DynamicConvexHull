@@ -119,7 +119,7 @@ function delete_point_from_hull(current_node, point_to_delete) {
             current_node.brother().node_color = NodeColor.Black;
             return recount_to_up(current_node.brother());
         } else {
-            return repair_after_delete_case_1(current_node);
+            return repair_after_delete_case_1(current_node.brother());
         }
     } else if (!current_node.is_leaf()) {
         push_sub_hull_down(current_node);
@@ -143,6 +143,7 @@ function repair_after_delete_case_1(current_node) {
 
 function repair_after_delete_case_2(current_node) {
     if (current_node.brother().node_color == NodeColor.Red) {
+
         current_node.parent.node_color = NodeColor.Red;
         current_node.brother().node_color = NodeColor.Black;
 
@@ -162,7 +163,7 @@ function repair_after_delete_cases_3_4(current_node) {
         current_node.brother().left_son.node_color == NodeColor.Black &&
         current_node.brother().right_son.node_color == NodeColor.Black) {
         
-        current_node.brother().node_color = NodeColor.Red();
+        current_node.brother().node_color = NodeColor.Red;
         return repair_after_delete_case_1(current_node.parent);
 
     } else if (current_node.parent.node_color == NodeColor.Red &&
@@ -185,24 +186,24 @@ function repair_after_delete_case_5(current_node) {
     if (current_node.brother().is_left_son() &&
         current_node.brother().left_son.node_color == NodeColor.Black) {
 
-        current_node.brother().node_color = NodeColor.Red();
+        current_node.brother().node_color = NodeColor.Red;
         current_node.brother().right_son.node_color = NodeColor.Black;
-
-        push_sub_hull_down(current_node.brother().left_son);
-        current_node.brother().rotate_right();
-
-        recount(current_node.brother().right_son);
-
-    } else if (current_node.brother().is_right_son() &&
-        current_node.brother().right_son.node_color == NodeColor.Black) {
-        
-        current_node.brother().node_color = NodeColor.Red();
-        current_node.brother().left.node_color = NodeColor.Black;
 
         push_sub_hull_down(current_node.brother().right_son);
         current_node.brother().rotate_left();
 
         recount(current_node.brother().left_son);
+
+    } else if (current_node.brother().is_right_son() &&
+        current_node.brother().right_son.node_color == NodeColor.Black) {
+        
+        current_node.brother().node_color = NodeColor.Red;
+        current_node.brother().left_son.node_color = NodeColor.Black;
+
+        push_sub_hull_down(current_node.brother().left_son);
+        current_node.brother().rotate_right();
+
+        recount(current_node.brother().right_son);
     }
     return repair_after_delete_case_6(current_node);
 }

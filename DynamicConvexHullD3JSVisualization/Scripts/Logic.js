@@ -6,8 +6,26 @@ $(document).ready(function () {
     let all_points = [];
 
     $("#canvas").on("click", function(e) {
-        hull.insert_point(new Point(e.pageX, -e.pageY));
-        all_points.push(new Point(e.pageX, -e.pageY));
+
+        let to_add = new Point(e.pageX, -e.pageY);
+        let found = false;
+
+        all_points.forEach(point => {
+            if (Math.sqrt((point.x - to_add.x) * (point.x - to_add.x) + (point.y - to_add.y) * (point.y - to_add.y)) <= 5) {                
+
+                hull.delete_point(point);
+
+                point.x = -100;
+                point.y = -100;
+
+                found = true;
+            }
+        });
+
+        if (!found) {
+            hull.insert_point(to_add);
+            all_points.push(to_add);
+        }
 
         //alert("add " + (e.pageX ) +" "+ (-e.pageY ));
         

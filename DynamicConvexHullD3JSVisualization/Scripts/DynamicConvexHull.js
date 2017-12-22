@@ -16,7 +16,7 @@ class DynamicConvexHull {
 
     delete_point(point) {
         if (this.hull_root != null) {
-            if (this.hull_root.is_leaft() && this.hull_root.max_point.comparet_to(point) == null) {
+            if (this.hull_root.is_leaf() && this.hull_root.max_point.compare_to(point) == 0) {
                 this.hull_root = null;
             } else {
                 this.hull_root = delete_point_from_hull(this.hull_root, point);
