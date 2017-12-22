@@ -1,9 +1,91 @@
-.body {
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+
     font-family: 'Open Sans', sans-serif;
 }
 
-#canvas {
-    background-color: rgba(255, 0, 0, 0.171);
+.content {
+    height: 100%;
 }
 
+$control-panel-size: 120px;
 
+$neutral-backbround-color: rgb(235, 235, 235);
+$border-color: rgb(204, 204, 204);
+
+$border-width: 2px;
+
+.main {
+    //#canvas {
+    //    background-color: rgba(255, 0, 0, 0.171);
+    //}
+
+
+    height: 100%;
+    display: flex;
+
+    @media (orientation: landscape) {
+        flex-direction: row-reverse;
+    }
+
+    @media (orientation: portrait) {
+        flex-direction: column-reverse;
+    }
+
+    .control-panel {
+        flex-shrink: 0;
+
+        background-color: $neutral-backbround-color;
+
+        @media (orientation: landscape) {
+            width: $control-panel-size;
+        }
+
+        @media (orientation: portrait) {
+            height: $control-panel-size;
+        }
+
+    }
+
+    .convex-hull-visualization-part {
+        flex-grow: 4;
+        margin: 5px;
+
+        border-width: $border-width;
+        border-color: $border-color;
+        border-style: solid;
+
+    }
+
+    .trees-part {
+        flex-grow: 6;
+        flex-direction: column;
+        display: flex;
+
+        @media (orientation: portrait) {
+            flex-direction: row;
+        }
+
+        .treap-visualization-part {
+            flex-grow: 1;
+            margin: 5px;
+
+            border-width: $border-width;
+            border-color: $border-color;
+            border-style: solid;
+        }
+
+        .red-black-tree-visualization-part {
+            flex-grow: 1;
+            margin: 5px;
+
+            border-width: $border-width;
+            border-color: $border-color;
+            border-style: solid;
+        }
+    }
+}

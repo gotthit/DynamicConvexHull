@@ -1,9 +1,84 @@
-.body {
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
   font-family: 'Open Sans', sans-serif;
 }
 
-#canvas {
-  background-color: rgba(255, 0, 0, 0.171);
+.content {
+  height: 100%;
+}
+
+.main {
+  height: 100%;
+  display: flex;
+}
+
+@media (orientation: landscape) {
+  .main {
+    flex-direction: row-reverse;
+  }
+}
+
+@media (orientation: portrait) {
+  .main {
+    flex-direction: column-reverse;
+  }
+}
+
+.main .control-panel {
+  flex-shrink: 0;
+  background-color: #ebebeb;
+}
+
+@media (orientation: landscape) {
+  .main .control-panel {
+    width: 120px;
+  }
+}
+
+@media (orientation: portrait) {
+  .main .control-panel {
+    height: 120px;
+  }
+}
+
+.main .convex-hull-visualization-part {
+  flex-grow: 4;
+  margin: 5px;
+  border-width: 2px;
+  border-color: #cccccc;
+  border-style: solid;
+}
+
+.main .trees-part {
+  flex-grow: 6;
+  flex-direction: column;
+  display: flex;
+}
+
+@media (orientation: portrait) {
+  .main .trees-part {
+    flex-direction: row;
+  }
+}
+
+.main .trees-part .treap-visualization-part {
+  flex-grow: 1;
+  margin: 5px;
+  border-width: 2px;
+  border-color: #cccccc;
+  border-style: solid;
+}
+
+.main .trees-part .red-black-tree-visualization-part {
+  flex-grow: 1;
+  margin: 5px;
+  border-width: 2px;
+  border-color: #cccccc;
+  border-style: solid;
 }
  
 

@@ -6,7 +6,6 @@ $(document).ready(function () {
     let all_points = [];
 
     $("#canvas").on("click", function(e) {
-
         let to_add = new Point(e.pageX, -e.pageY);
         let found = false;
 
@@ -27,8 +26,7 @@ $(document).ready(function () {
             all_points.push(to_add);
         }
 
-        //alert("add " + (e.pageX ) +" "+ (-e.pageY ));
-        
+        //alert("add " + (e.pageX ) +" "+ (-e.pageY ));   
 
         let canvas = document.getElementById("canvas");
         let ctx = canvas.getContext("2d");
@@ -49,6 +47,9 @@ $(document).ready(function () {
             ctx.stroke();
         });
     });
+
+
+    
 
  });
 
