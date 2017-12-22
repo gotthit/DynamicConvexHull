@@ -114,10 +114,10 @@ namespace DynamicConvexHullCSharpRealization
             return (yCoord - first.Y) * (second.X - first.X) / (second.Y - first.Y) + first.X;
         }
 
-        private static bool isIntersectLoverY(Point firstLeft, Point secondLeft, Point firstRight, Point secondRight, double yCoord, bool isLeftHalf)
+        private static bool isIntersectLoverY(Point firstLower, Point secondLower, Point firstUpper, Point secondUpper, double yCoord, bool isLeftHalf)
         {
-            double leftXbyY = getXbyY(firstLeft, secondLeft, yCoord);
-            double rightXbyY = getXbyY(firstRight, secondRight, yCoord);
+            double leftXbyY = getXbyY(firstLower, secondLower, yCoord);
+            double rightXbyY = getXbyY(firstUpper, secondUpper, yCoord);
             if (isLeftHalf)
             {
                 return leftXbyY < rightXbyY;
