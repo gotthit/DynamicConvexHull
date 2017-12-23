@@ -35,8 +35,7 @@ function merge_treaps(left_treap, right_treap) {
     if (right_treap == null) {
         return left_treap;
     }
-    if (left_treap.size > right_treap.size) { 
-        //(get_random_in_scope(0, left_treap.size + right_treap.size) < left_treap.size) { // TODO: return back
+    if (get_random_in_scope(0, left_treap.size + right_treap.size) < left_treap.size) {
 
         left_treap.right_treap = merge_treaps(left_treap.right_treap, right_treap);
         left_treap.update();

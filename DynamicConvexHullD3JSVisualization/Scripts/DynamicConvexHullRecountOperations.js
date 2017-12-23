@@ -279,7 +279,7 @@ function determine_point_position_on_hull(lower_top_point, upper_top_point, prev
 
     let previous_point_position = null;
     if (previous_point != null) {
-        previous_point_position = determine_posotion(lower_top_point, upper_top_point, previous_point);
+        previous_point_position = determine_position(lower_top_point, upper_top_point, previous_point);
     }
     if (previous_point_position == null || previous_point_position == PointPosition.On) {
         previous_point_position = is_left ? PointPosition.Right : PointPosition.Left;
@@ -287,7 +287,7 @@ function determine_point_position_on_hull(lower_top_point, upper_top_point, prev
 
     let next_point_position = null;
     if (next_point != null) {
-        next_point_position = determine_posotion(lower_top_point, upper_top_point, next_point);
+        next_point_position = determine_position(lower_top_point, upper_top_point, next_point);
     }
     if (next_point_position == null || next_point_position == PointPosition.On) {
         next_point_position = is_left ? PointPosition.Right : PointPosition.Left;

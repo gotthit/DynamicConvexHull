@@ -19,12 +19,12 @@ namespace DynamicConvexHullCSharpRealization
 
             List<Point> list = new List<Point>();
 
-            var rand = new Random(33);
+            var rand = new Random();
 
             while (true)
             {
 
-                for (int i = 0; i < 1000; ++i)
+                for (int i = 0; i < 40; ++i)
                 {
                     Point p = new Point(rand.Next(5, 1200), rand.Next(5, 600));
                     hull.Insert(p);
@@ -41,9 +41,7 @@ namespace DynamicConvexHullCSharpRealization
                     //Console.ReadKey();
                 }
 
-                Console.WriteLine(DateTime.Now);
-
-                for (int i = 0; i < 1000; ++i)
+                for (int i = 0; i < 40; ++i)
                 {
                     Point p = list[0];
                     hull.Delete(p);
@@ -59,8 +57,6 @@ namespace DynamicConvexHullCSharpRealization
                     //Thread.Sleep(200);
                     //Console.ReadKey();
                 }
-
-                Console.WriteLine("--");
             }
 
             Console.ReadKey();
