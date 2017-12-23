@@ -19,10 +19,11 @@ $border-color: rgb(204, 204, 204);
 
 $border-width: 2px;
 
+#canvas {
+    background-color: rgba(34, 34, 34);
+ }
+
 .main {
-    //#canvas {
-    //    background-color: rgba(255, 0, 0, 0.171);
-    //}
 
 
     height: 100%;
